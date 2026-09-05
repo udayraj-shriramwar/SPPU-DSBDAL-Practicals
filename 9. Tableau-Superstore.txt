@@ -1,0 +1,418 @@
+Perform the following data visualization operations using Tableau on (Superstore dataset)
+a. 1D (Linear) Data visualization
+b. 2D (Planar) Data Visualization
+c. 3D (Volumetric) Data Visualization
+d. Temporal Data Visualization
+e. Multidimensional Data Visualization
+f. Tree/ Hierarchical Data visualization
+
+# Import file
+Select Microsoft Excel / Text file > select Superstore dataset > okay
+Drag Superstore dataset(Orders table) on Drag-Sheet 
+
+--- If Superstore dataset is not given ---
+# Import file Method 2: If You Are Already Inside a Workbook
+- Go to Data menu at the top.
+- Click : New Data Source
+- In the left connection panel: Choose Saved Data Sources
+- Select : Sample - Superstore
+- Click Open
+
+# a. 1D
+Title : 1D - Find Total Sales of US
+
+Visualization Details :
+- Rows: Sales (if needed : right click > measures > sum)
+- Filters: Drag Order Date > Years > Select use all > okay > right click same > Show Filter
+
+Insight : The total sales across the selected US orders are approximately 2.3 million.
+
+# b. 2D
+Title : 2D - Sale Distribution
+
+Visualization Details :
+- 1. Double click on State (present in tables) 
+- 2. Color: Sales
+- 3. Detail: Country/Region, State/Province
+- 4. Filters: i) Drag Order Date > Years > Select use all > okay > right click same > Show Filter
+              ii) Drag Category > Select use all > okay > right click same > Show Filter
+
+Insight : California and New York contribute the highest sales among all states.
+
+# c. 3D
+Title : 3D - Sales by Sub-Category and Segment
+
+Visualization Details :
+- Rows: Sales
+- Columns : Sub-Category, Segment
+- Color: Segment 
+
+Insight : The Consumer segment generates the highest sales across most product sub-categories, especially Chairs and Phones.
+
+# d. Multidimensional
+Title : Multidimensional - Regionwise Sales and Profit Values for Each Product Category
+
+Visualization Details :
+- Rows: SUM(Sales)
+- Columns: SUM(Profit)
+- Color: Category
+- Shape: Region
+
+Insight : Technology products in the East region achieve the highest profit and sales combination.
+
+# e. Temporal
+Title : Temporal_Data – Time Series Chart with Sales and Time
+
+Visualization Details :
+- Rows: Category, SUM(Sales)
+- Columns: Order Date > right click > select continuous > again right click > select month
+- Color: Segment
+- Analytics (Model) : Drag Forecast in Add Forecast
+
+Insight : Sales change over time, but the Consumer segment generally has the highest sales compared to Corporate and Home Office across all product categories.
+
+# f. Tree
+Title : Aggregated Sales Total for Each Product Category
+
+Visualization Details :
+- Rows: Sales 
+- Columns : Sub-Category
+-- "Go to > Show me > Select Tree-Map (Visualization generate automatically)"
+- Color: Profit
+
+Insight : Chairs, Phones, and Storage contribute the largest sales volumes, while Tables show comparatively lower profitability.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+a. 1D (Linear) Data Visualization
+
+What is 1D Visualization?
+1D visualization uses only one variable/attribute.
+Example: Only Sales, Only Profit, Only Quantity
+
+What Happens Internally?
+Tableau calculates total sales using:
+Total Sales=∑Sales
+Only one measure is visualized.
+Therefore it becomes a 1D visualization.
+
+Q1. Why is this called 1D visualization?
+Because only one attribute (Sales) is analyzed.
+
+Q2. What type of chart is created?
+Bar chart.
+
+Q3. What is SUM(Sales)?
+It calculates total sales values.
+
+
+b. 2D (Planar) Data Visualization
+
+What is 2D Visualization?
+2D visualization uses: two dimensions/axes
+Example: State vs Sales, X-axis and Y-axis
+Maps and scatter plots are common examples.
+
+What Happens Internally?
+Tableau uses generated latitude and longitude.
+Sales intensity is shown using color gradients.
+Darker color: Higher sales
+Lighter color: Lower sales
+
+Q1. Why is this called 2D visualization?
+Because data is represented on two axes/planes.
+
+Q2. Why is a map considered 2D?
+Because it uses horizontal and vertical spatial coordinates.
+
+Q3. What does color represent?
+Sales amount.
+
+
+c. 3D (Volumetric) Data Visualization
+
+What is 3D Visualization?
+3D visualization represents data using:
+multiple dimensions
+depth/volume/grouping
+In Tableau, true 3D charts are limited, so grouped multi-dimensional charts are treated as 3D-like visualization.
+
+What Happens Internally?
+The chart compares: Sub-Category, Segment, Sales
+Three dimensions are involved: Sales, Sub-category, Segment
+Hence it behaves like a 3D analytical view.
+
+Q1. Why is this considered 3D?
+Because multiple dimensions are analyzed simultaneously.
+
+Q2. Does Tableau support real 3D graphs?
+Limited support. Mostly simulated using multiple dimensions.
+
+Q3. What is Segment?
+Customer classification: Consumer, Corporate, Home Office
+
+
+d. Multidimensional Data Visualization
+
+What is Multidimensional Visualization?
+It uses multiple variables together.
+Example:Sales, Profit, Category, Region
+All visualized in one graph.
+
+What Happens Internally?
+The scatter plot compares:Sales, Profit, Category, Region
+Each point represents a combination of dimensions.
+
+Q1. Why is it multidimensional?
+Because multiple attributes are visualized together.
+
+Q2. Which chart is used?
+Scatter plot.
+
+Q3. What does Shape represent?
+Region.
+
+
+e. Temporal Data Visualization
+
+What is Temporal Visualization?
+Temporal visualization shows:
+data changes over time
+Examples: monthly salesyearly profit, daily traffic
+
+Why Continuous Date is Important?
+Forecast works only with: continuous timeline
+Continuous date creates: real chronological order
+Instead of: Jan, Feb, Mar categories
+it becomes: Jan 2023 → Feb 2023 → Mar 2023
+
+What Happens Internally?
+Tableau predicts future values using statistical forecasting models.
+Trend is analyzed over time:
+yt=Tt+St+Et
+	​Where:Tt= Trend
+           St= Seasonal component
+           Et= Error
+
+Q1. What is temporal visualization?
+Visualization of data over time.
+
+Q2. Why is forecasting used?
+To predict future trends.
+
+Q3. Why must date be continuous?
+Forecast requires chronological timeline.
+
+
+f. Tree / Hierarchical Visualization
+
+
+What is Tree Visualization?
+Treemap displays: hierarchical data, proportional sizes using rectangles
+Large rectangle: higher value
+Small rectangle: lower value
+
+What Happens Internally?
+Rectangle size: represents Sales
+Color: represents Profit
+Hierarchy: Category → Sub-category
+
+Q1. What is hierarchical data?
+Data organized in parent-child structure.
+
+Q2. What does rectangle size represent?
+Sales value.
+
+Q3. What does color represent?
+Profit.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#  Viva Questions and Answers 
+
+1. What is Tableau?
+
+Tableau is a data visualization and business intelligence tool used to analyze and visualize data using charts, graphs, maps, and dashboards.
+
+2. What is data visualization?
+
+Data visualization is the graphical representation of data using charts, graphs, maps, and dashboards to understand patterns and trends.
+
+3. What is the Superstore dataset?
+
+Superstore is a sample sales dataset provided in Tableau containing orders, customers, products, sales, profit, and regional information.
+
+4. What are Dimensions in Tableau?
+
+Dimensions are qualitative fields used to categorize data.
+Examples:
+
+Category
+Region
+State
+Customer Name
+5. What are Measures in Tableau?
+
+Measures are quantitative numeric values used for calculations.
+Examples:
+
+Sales
+Profit
+Quantity
+Discount
+6. Difference between Dimension and Measure?
+Dimension	Measure
+Categorical data	Numeric data
+Creates headers	Creates axes
+Blue by default	Green by default
+7. What is a worksheet in Tableau?
+
+A worksheet is a single visualization or chart created in Tableau.
+
+8. What is a dashboard?
+
+A dashboard combines multiple worksheets into a single interactive view.
+
+9. What is a story in Tableau?
+
+A story is a sequence of dashboards or worksheets used to present data insights step by step.
+
+10. What is aggregation in Tableau?
+
+Aggregation combines multiple values into one summarized value.
+
+Example:
+
+SUM(Sales)
+AVG(Profit)
+11. What is the difference between discrete and continuous data?
+Discrete	Continuous
+Blue pill	Green pill
+Separate categories	Continuous axis
+Example: Months as Jan, Feb	Example: Timeline
+12. Why is forecasting used?
+
+Forecasting predicts future trends based on historical data.
+
+13. Why was Forecast disabled earlier?
+
+Because the date field was discrete instead of continuous, so Tableau could not detect a proper time series.
+
+14. What is a filter in Tableau?
+
+Filters restrict data shown in the visualization.
+
+Example:
+
+Filter by year
+Filter by category
+15. What is a Treemap?
+
+A Treemap is a hierarchical visualization using rectangles where:
+
+size represents value
+color represents another measure
+16. What is temporal data visualization?
+
+Temporal visualization shows how data changes over time.
+
+Example:
+
+Monthly sales trend
+Yearly profit analysis
+17. What is a scatter plot?
+
+A scatter plot shows relationships between two numeric measures.
+
+Example:
+
+Sales vs Profit
+18. What is the purpose of color in Tableau?
+
+Color helps compare values, categories, and intensity of data.
+
+19. What is Show Me in Tableau?
+
+Show Me suggests suitable chart types automatically based on selected data fields.
+
+20. What is the use of the Analytics pane?
+
+The Analytics pane is used to add:
+
+Forecast
+Trend line
+Average line
+Reference line
+Clustering
+
+to visualizations.

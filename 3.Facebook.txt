@@ -1,0 +1,475 @@
+1. Perform the following operations using Python on the Facebook metrics data sets
+a. Create data subsets
+b. Merge Data
+c. Sort Data
+d. Transposing Data
+e. Shape and reshape Data
+
+
+
+import pandas as pd
+
+#dataset
+df = pd.read_csv('dataset_Facebook.csv',delimiter=';')
+df
+
+df.describe()
+
+df.info()
+
+# a. Create data subsets
+subset1 = df[['Type', 'Category', 'Post Month']]
+subset1
+subset2 = df[['comment', 'like', 'share']]
+subset2
+
+# b. Merge Data
+merge = pd.concat([subset1, subset2], axis=1)
+merge
+
+c. Sort Data
+sorted_df = df.sort_values(by=['like'],ascending=False)
+sorted_df
+
+d. Transposing Data
+merge.T
+#or
+transposed = df.transpose()
+transposed
+
+e. Shape and reshape Data
+#checking shape #rows x columns
+df.shape
+
+df.Type.unique()
+
+# reshape
+import numpy as np
+arr = np.array(df[['Post Month', 'Post Weekday']].head(6))
+reshape =arr.reshape(3,4)
+reshape
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+EXPLANATION
+
+---
+
+# 🔹 1. Import Library
+
+```python
+import pandas as pd
+```
+
+### Explanation:
+
+* `import` → keyword used to include a library
+* `pandas` → Python library for data analysis
+* `as` → gives alias (short name)
+* `pd` → shorthand for pandas
+
+👉 So everywhere you write `pd`, it means `pandas`
+
+---
+
+# 🔹 2. Load Dataset
+
+```python
+df = pd.read_csv('dataset_Facebook - dataset_Facebook.csv')
+```
+
+### Explanation:
+
+* `df` → variable name (DataFrame)
+* `=` → assignment operator
+* `pd.read_csv()` → function to read CSV file
+* `'dataset_Facebook - dataset_Facebook.csv'` → file name
+
+👉 Stores dataset into `df`
+
+---
+
+# 🔹 3. Display Data
+
+```python
+df
+```
+
+### Explanation:
+
+* Simply prints the dataset
+  👉 Shows rows & columns
+
+---
+
+# 🔹 4. Statistical Summary
+
+```python
+df.describe()
+```
+
+### Explanation:
+
+* `describe()` → built-in pandas function
+  👉 Gives:
+* count
+* mean
+* std
+* min/max
+* quartiles
+
+---
+
+# 🔹 5. Info of Dataset
+
+```python
+df.info()
+```
+
+### Explanation:
+
+* `info()` → shows structure of data
+
+👉 Includes:
+
+* number of rows
+* column names
+* data types
+* null values
+
+---
+
+# 🔹 6. First Subset
+
+```python
+subset1 = df[['Type', 'Category', 'Post Month']]
+subset1
+```
+
+### Explanation:
+
+* `subset1` → new DataFrame
+* `df[['...']]` → selecting columns
+* `'Type', 'Category', 'Post Month'` → column names
+
+👉 Extracts only selected columns
+
+---
+
+# 🔹 7. Second Subset
+
+```python
+subset2 = df[['comment', 'like', 'share']]
+subset2
+```
+
+### Explanation:
+
+* Same concept as above
+  👉 Extracts engagement columns
+
+---
+
+# 🔹 8. Merge Data
+
+```python
+merge = pd.concat([subset1, subset2], axis=1)
+merge
+```
+
+### Explanation:
+
+* `pd.concat()` → combines datasets
+* `[subset1, subset2]` → list of DataFrames
+* `axis=1` → column-wise merge
+
+👉 Combines both subsets side-by-side
+
+---
+
+# 🔹 9. Sorting
+
+```python
+sorted_df = df.sort_values(by=['like'], ascending=False)
+sorted_df
+```
+
+### Explanation:
+
+* `sort_values()` → sorting function
+* `by=['like']` → column used for sorting
+* `ascending=False` → descending order
+
+👉 Highest likes first
+
+---
+
+# 🔹 10. Transpose (Method 1)
+
+```python
+transposed = df.transpose()
+transposed
+```
+
+### Explanation:
+
+* `transpose()` → swaps rows & columns
+
+👉 Rows → Columns
+👉 Columns → Rows
+
+---
+
+# 🔹 11. Transpose (Method 2)
+
+```python
+merge.T
+```
+
+### Explanation:
+
+* `.T` → shortcut for transpose
+  👉 Same result as above
+
+---
+
+# 🔹 12. Shape of Data
+
+```python
+df.shape
+```
+
+### Explanation:
+
+* `shape` → attribute (not function)
+
+👉 Returns:
+
+```
+(rows, columns)
+```
+
+---
+
+# 🔹 13. Unique Values
+
+```python
+df.Type.unique()
+```
+
+### Explanation:
+
+* `df.Type` → access column
+* `unique()` → gives distinct values
+
+👉 Shows all post types
+
+---
+
+# 🔹 14. Reshaping using NumPy
+
+```python
+import numpy as np
+arr = np.array(df[['Post Month', 'Post Weekday']].head(6))
+reshape = arr.reshape(3,4)
+reshape
+```
+
+### Explanation:
+
+#### Step-by-step:
+
+* `numpy` → numerical library
+* `as np` → alias
+
+---
+
+### Line 1:
+
+```python
+arr = np.array(...)
+```
+
+* Converts DataFrame → array
+
+---
+
+### Inside:
+
+```python
+df[['Post Month', 'Post Weekday']]
+```
+
+→ select 2 columns
+
+```python
+.head(6)
+```
+
+→ first 6 rows
+
+👉 So total values = 6 × 2 = 12
+
+---
+
+### Line 2:
+
+```python
+arr.reshape(3,4)
+```
+
+* `reshape(rows, columns)`
+* 12 values → reshaped into 3 × 4
+
+👉 Must match total elements
+
+---
+
+# 🔹 15. Melt (Reshaping)
+
+```python
+pd.melt(df, id_vars=['Type'], value_vars=['comment'])
+```
+
+### Explanation:
+
+* `melt()` → converts wide → long format
+* `id_vars=['Type']` → fixed column
+* `value_vars=['comment']` → variable column
+
+👉 Output:
+
+| Type | variable | value |
+|          |              |          |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+VIVA-
+
+1. What is Pandas?
+Pandas is a Python library used for data manipulation and analysis. It provides data structures like Series and DataFrame.
+
+🔸 2. What is a DataFrame?
+A DataFrame is a 2D labeled data structure with rows and columns, similar to a table in a database or Excel sheet.
+
+🔸 3. What does pd.read_csv() do?
+It reads a CSV file and converts it into a DataFrame.
+
+🔸 4. Difference between head() and describe()?
+head() → shows first 5 rows
+describe() → gives statistical summary
+
+🔸 5. What does df.info() provide?
+It gives:
+Number of rows and columns
+Column names
+Data types
+Non-null values
+
+🔸 6. What is subsetting?
+Subsetting means selecting specific columns or rows from a dataset.
+
+🔸 7. What is pd.concat()?
+It is used to combine multiple DataFrames:
+axis=0 → row-wise
+axis=1 → column-wise
+
+🔸 8. What is sorting in pandas?
+Sorting arranges data in ascending or descending order using sort_values().
+
+🔸 9. What is transpose?
+Transpose converts:
+rows → columns
+columns → rows
+
+🔸 10. Difference between .T and transpose()?
+Both perform same operation:
+.T → shortcut
+transpose() → function
+
+🔸 11. What does df.shape return?
+It returns a tuple:
+(rows, columns)
+
+🔸 12. What is unique() function?
+It returns distinct values from a column.
+
+🔸 13. What is NumPy?
+NumPy is a Python library used for numerical computations and handling arrays.
+
+🔸 14. What is reshaping in NumPy?
+Reshaping changes the shape (dimensions) of an array using reshape().
+
+🔸 15. What condition must be satisfied for reshape?
+Total number of elements must remain same.
+👉 Example:
+12 elements → (3×4) or (2×6)
+
+🔸 16. What is melt() function?
+It converts data from wide format to long format.
+
+🔸 17. What are id_vars in melt?
+Columns that remain unchanged (fixed).
+
+🔸 18. What are value_vars in melt?
+Columns that are unpivoted into rows.
+
+🔸 19. What is data preprocessing?
+It is the process of cleaning and transforming data before analysis.
+
+🔸 20. Why is sorting important?
+Sorting helps in:
+Identifying top values
+Better data understanding
+
+🔸 21. What is axis in pandas?
+axis=0 → rows
+axis=1 → columns
+
+🔸 22. What is the difference between merge and concat?
+concat() → simple joining
+merge() → joins using common column (like SQL join)
+
+🔸 23. What is EDA?
+Exploratory Data Analysis is analyzing datasets to summarize their main characteristics.
+
+🔸 24. What type of data is Facebook dataset?
+It is structured data with numerical and categorical features.
+
+🔸 25. Why do we use pandas in DSBDAL?
+To:
+Handle datasets
+Perform analysis
+Clean and transform data
+
+
+

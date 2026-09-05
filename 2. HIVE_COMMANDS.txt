@@ -1,0 +1,794 @@
+1. Create & Use Database
+CREATE DATABASE flight_db;
+USE flight_db;
+
+2. Drop Table (Requirement a)
+DROP TABLE IF EXISTS flight_data;
+DROP TABLE IF EXISTS airports;
+
+3. Create Main Table (Requirement a)
+CREATE TABLE flight_data (
+    year INT,
+    month INT,
+    day INT,
+    day_of_week INT,
+    dep_time INT,
+    sched_dep_time INT,
+    arr_time INT,
+    sched_arr_time INT,
+    carrier STRING,
+    flight INT,
+    tailnum STRING,
+    actual_elapsed_time INT,
+    sched_elapsed_time INT,
+    air_time INT,
+    arr_delay INT,
+    dep_delay INT,
+    origin STRING,
+    dest STRING,
+    distance INT
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ',';
+
+4. Alter Table (Requirement a)
+ALTER TABLE flight_data ADD COLUMNS (status STRING);
+
+5. Create External Table (Requirement b)
+CREATE EXTERNAL TABLE ext_flight_data (
+    year INT,
+    month INT,
+    day INT,
+    dep_delay INT
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LOCATION '/user/hive/ext_flight_data';
+
+6. Load Data (Requirement c)
+
+👉 (Make sure file exists in /mnt/ or HDFS)
+
+LOAD DATA LOCAL INPATH '/mnt/flight_data.csv'
+INTO TABLE flight_data;
+
+7. Insert Data (Requirement c)
+INSERT INTO flight_data VALUES
+(2008,1,1,2,1200,1150,1400,1350,'AI',101,'N123',120,130,110,10,10,'DEL','MUM',1400,'ON_TIME');
+
+8. Create Second Table for Join (Requirement c)
+CREATE TABLE airports (
+    name STRING,
+    country STRING,
+    area_code INT,
+    code STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ',';
+
+
+9. Load Airports Data
+LOAD DATA LOCAL INPATH '/mnt/airports.csv'
+INTO TABLE airports;
+
+
+10. Join Tables (Requirement c)
+SELECT a.name, f.flight, f.dep_delay
+FROM flight_data f
+JOIN airports a
+ON (f.origin = a.code);
+
+
+11. Create Index (Requirement d)
+CREATE INDEX flight_index
+ON TABLE flight_data (origin)
+AS 'COMPACT'
+WITH DEFERRED REBUILD;
+ALTER INDEX flight_index ON flight_data REBUILD;
+SHOW INDEX ON flight_data;
+
+
+12. Average Departure Delay per Day in 2008 (Requirement e ✅ IMPORTANT)
+SELECT day, AVG(dep_delay) AS avg_delay
+FROM flight_data
+WHERE year = 2008
+GROUP BY day;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# EXPLANATION
+
+# Hive Flight Database Code Explanation
+
+---
+
+# 1. Create & Use Database
+
+```sql
+CREATE DATABASE flight_db;
+```
+
+* `"CREATE DATABASE"` : Creates a new database in Hive.
+* `"flight_db"` : Name of the database.
+
+### Explanation:
+
+* Creates a database named `flight_db`.
+
+---
+
+```sql
+USE flight_db;
+```
+
+* `"USE"` : Selects a database for current session.
+* `"flight_db"` : Database name.
+
+### Explanation:
+
+* Makes `flight_db` the active database.
+
+---
+
+# 2. Drop Table
+
+```sql
+DROP TABLE IF EXISTS flight_data;
+```
+
+* `"DROP TABLE"` : Deletes table from database.
+* `"IF EXISTS"` : Prevents error if table does not exist.
+* `"flight_data"` : Table name.
+
+### Explanation:
+
+* Deletes `flight_data` table if already present.
+
+---
+
+```sql
+DROP TABLE IF EXISTS airports;
+```
+
+* Deletes `airports` table if it exists.
+
+---
+
+# 3. Create Main Table
+
+```sql
+CREATE TABLE flight_data (
+```
+
+* `"CREATE TABLE"` : Creates a new table.
+* `"flight_data"` : Table name.
+
+---
+
+```sql
+year INT,
+```
+
+* `"year"` : Column name.
+* `"INT"` : Integer datatype.
+
+### Explanation:
+
+* Stores year value.
+
+---
+
+```sql
+month INT,
+day INT,
+day_of_week INT,
+```
+
+* `"month"` : Stores month.
+* `"day"` : Stores day.
+* `"day_of_week"` : Stores weekday number.
+
+---
+
+```sql
+dep_time INT,
+sched_dep_time INT,
+```
+
+* `"dep_time"` : Actual departure time.
+* `"sched_dep_time"` : Scheduled departure time.
+
+---
+
+```sql
+arr_time INT,
+sched_arr_time INT,
+```
+
+* `"arr_time"` : Actual arrival time.
+* `"sched_arr_time"` : Scheduled arrival time.
+
+---
+
+```sql
+carrier STRING,
+```
+
+* `"carrier"` : Airline company code.
+* `"STRING"` : Text datatype.
+
+---
+
+```sql
+flight INT,
+```
+
+* `"flight"` : Flight number.
+
+---
+
+```sql
+tailnum STRING,
+```
+
+* `"tailnum"` : Aircraft tail number.
+
+---
+
+```sql
+actual_elapsed_time INT,
+sched_elapsed_time INT,
+air_time INT,
+```
+
+* `"actual_elapsed_time"` : Actual flight duration.
+* `"sched_elapsed_time"` : Scheduled duration.
+* `"air_time"` : Actual air travel time.
+
+---
+
+```sql
+arr_delay INT,
+dep_delay INT,
+```
+
+* `"arr_delay"` : Arrival delay.
+* `"dep_delay"` : Departure delay.
+
+---
+
+```sql
+origin STRING,
+dest STRING,
+```
+
+* `"origin"` : Departure airport code.
+* `"dest"` : Destination airport code.
+
+---
+
+```sql
+distance INT
+```
+
+* `"distance"` : Distance traveled by flight.
+
+---
+
+```sql
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ',';
+```
+
+* `"ROW FORMAT DELIMITED"` : Specifies delimited file format.
+* `"FIELDS TERMINATED BY ','"` : Columns separated by commas.
+
+### Explanation:
+
+* Creates table structure for storing flight data.
+
+---
+
+# 4. Alter Table
+
+```sql
+ALTER TABLE flight_data ADD COLUMNS (status STRING);
+```
+
+* `"ALTER TABLE"` : Modifies existing table.
+* `"ADD COLUMNS"` : Adds new column.
+* `"status STRING"` : Adds status column with text datatype.
+
+### Explanation:
+
+* Adds `status` column to `flight_data`.
+
+---
+
+# 5. Create External Table
+
+```sql
+CREATE EXTERNAL TABLE ext_flight_data (
+```
+
+* `"EXTERNAL TABLE"` : Creates table linked to external data location.
+
+### Difference:
+
+* External table data is not deleted when table is dropped.
+
+---
+
+```sql
+year INT,
+month INT,
+day INT,
+dep_delay INT
+```
+
+* Defines columns for external table.
+
+---
+
+```sql
+LOCATION '/user/hive/ext_flight_data';
+```
+
+* `"LOCATION"` : Specifies HDFS storage path.
+
+### Explanation:
+
+* External table reads data from HDFS location.
+
+---
+
+# 6. Load Data
+
+```sql
+LOAD DATA LOCAL INPATH '/mnt/flight_data.csv'
+INTO TABLE flight_data;
+```
+
+* `"LOAD DATA"` : Loads data into table.
+* `"LOCAL"` : File is from local filesystem.
+* `"INPATH"` : File path.
+* `"INTO TABLE"` : Destination table.
+
+### Explanation:
+
+* Loads CSV file into `flight_data`.
+
+---
+
+# 7. Insert Data
+
+```sql
+INSERT INTO flight_data VALUES
+```
+
+* `"INSERT INTO"` : Adds records into table.
+* `"VALUES"` : Specifies row values.
+
+---
+
+```sql
+(2008,1,1,2,1200,1150,1400,1350,'AI',101,'N123',120,130,110,10,10,'DEL','MUM',1400,'ON_TIME');
+```
+
+### Explanation of Values:
+
+* `2008` → Year
+* `1` → Month
+* `1` → Day
+* `2` → Day of week
+* `1200` → Departure time
+* `1150` → Scheduled departure time
+* `1400` → Arrival time
+* `1350` → Scheduled arrival time
+* `'AI'` → Airline code
+* `101` → Flight number
+* `'N123'` → Aircraft number
+* `120` → Actual elapsed time
+* `130` → Scheduled elapsed time
+* `110` → Air time
+* `10` → Arrival delay
+* `10` → Departure delay
+* `'DEL'` → Origin airport
+* `'MUM'` → Destination airport
+* `1400` → Distance
+* `'ON_TIME'` → Flight status
+
+---
+
+# 8. Create Second Table
+
+```sql
+CREATE TABLE airports (
+```
+
+* Creates airports table.
+
+---
+
+```sql
+name STRING,
+country STRING,
+area_code INT,
+code STRING
+)
+```
+
+* `"name"` : Airport name.
+* `"country"` : Country name.
+* `"area_code"` : Area code.
+* `"code"` : Airport code.
+
+---
+
+```sql
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ',';
+```
+
+* Data columns separated by commas.
+
+---
+
+# 9. Load Airports Data
+
+```sql
+LOAD DATA LOCAL INPATH '/mnt/airports.csv'
+INTO TABLE airports;
+```
+
+* Loads airport dataset into airports table.
+
+---
+
+# 10. Join Tables
+
+```sql
+SELECT a.name, f.flight, f.dep_delay
+```
+
+* `"SELECT"` : Retrieves columns.
+* `"a.name"` : Airport name.
+* `"f.flight"` : Flight number.
+* `"f.dep_delay"` : Departure delay.
+
+---
+
+```sql
+FROM flight_data f
+```
+
+* `"FROM"` : Source table.
+* `"f"` : Alias for `flight_data`.
+
+---
+
+```sql
+JOIN airports a
+```
+
+* `"JOIN"` : Combines two tables.
+* `"a"` : Alias for `airports`.
+
+---
+
+```sql
+ON (f.origin = a.code);
+```
+
+* `"ON"` : Join condition.
+* Matches airport code with flight origin.
+
+### Explanation:
+
+* Displays airport name, flight number, and departure delay.
+
+---
+
+# 11. Create Index
+
+```sql
+CREATE INDEX flight_index
+```
+
+* `"CREATE INDEX"` : Creates index for faster searching.
+* `"flight_index"` : Index name.
+
+---
+
+```sql
+ON TABLE flight_data (origin)
+```
+
+* Creates index on `origin` column.
+
+---
+
+```sql
+AS 'COMPACT'
+```
+
+* `"COMPACT"` : Type of Hive index.
+
+---
+
+```sql
+WITH DEFERRED REBUILD;
+```
+
+* Index is created later manually.
+
+---
+
+```sql
+ALTER INDEX flight_index ON flight_data REBUILD;
+```
+
+* `"REBUILD"` : Builds the index.
+
+---
+
+```sql
+SHOW INDEX ON flight_data;
+```
+
+* Displays indexes created on table.
+
+---
+
+# 12. Average Departure Delay per Day
+
+```sql
+SELECT day, AVG(dep_delay) AS avg_delay
+```
+
+* `"AVG()"` : Calculates average.
+* `"AS avg_delay"` : Alias name.
+
+---
+
+```sql
+FROM flight_data
+```
+
+* Uses `flight_data` table.
+
+---
+
+```sql
+WHERE year = 2008
+```
+
+* Filters records for year 2008.
+
+---
+
+```sql
+GROUP BY day;
+```
+
+* Groups records by day.
+
+### Explanation:
+
+* Calculates average departure delay for each day in 2008.
+
+---
+
+# Important Definitions
+
+## Database
+
+* Collection of related data stored electronically.
+
+## Table
+
+* Structured format containing rows and columns.
+
+## External Table
+
+* Hive table where data remains outside Hive warehouse.
+
+## Join
+
+* Combines data from multiple tables.
+
+## Index
+
+* Improves query search speed.
+
+## Aggregate Function
+
+* Function performing calculations on multiple rows (AVG, SUM, COUNT).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# VIVA
+
+
+## 20 Important Viva Questions and Answers
+
+### Hive Flight Database Practical
+
+---
+
+### 1. What is Apache Hive?
+
+* Apache Hive is a data warehouse tool built on Hadoop used for querying and analyzing large datasets using SQL-like language.
+
+---
+
+### 2. What is Hadoop?
+
+* Apache Hadoop is a framework used for distributed storage and processing of big data.
+
+---
+
+### 3. What is HDFS?
+
+* HDFS (Hadoop Distributed File System) is the storage system used in Hadoop.
+
+---
+
+### 4. What is a Database in Hive?
+
+* A database is a collection of related tables stored together.
+
+---
+
+### 5. What is the use of `CREATE DATABASE`?
+
+* It creates a new database in Hive.
+
+---
+
+### 6. Why do we use `USE database_name`?
+
+* It selects the database for current operations.
+
+---
+
+### 7. What is a Table in Hive?
+
+* A table stores data in rows and columns.
+
+---
+
+### 8. What is the difference between Managed Table and External Table?
+
+* Managed Table: Hive controls both metadata and data.
+* External Table: Hive controls only metadata; data remains in HDFS location.
+
+---
+
+### 9. What is the use of `DROP TABLE`?
+
+* It deletes a table from the database.
+
+---
+
+### 10. What is `ALTER TABLE` used for?
+
+* It modifies the structure of an existing table.
+
+---
+
+### 11. What is the use of `LOAD DATA` command?
+
+* It loads data from local filesystem or HDFS into Hive table.
+
+---
+
+### 12. What is `ROW FORMAT DELIMITED`?
+
+* It specifies that table data is separated using delimiters like commas.
+
+---
+
+### 13. What does `FIELDS TERMINATED BY ','` mean?
+
+* It indicates that columns are separated using commas in CSV file.
+
+---
+
+### 14. What is the purpose of `INSERT INTO`?
+
+* It adds records into a table.
+
+---
+
+### 15. What is a JOIN in Hive?
+
+* JOIN combines rows from two or more tables based on a common column.
+
+---
+
+### 16. What is an Alias in SQL/Hive?
+
+* An alias is a temporary short name given to a table or column.
+
+---
+
+### 17. What is an Index in Hive?
+
+* An index improves query searching speed on specific columns.
+
+---
+
+### 18. What is the purpose of `GROUP BY`?
+
+* `GROUP BY` groups rows having same values for aggregation.
+
+---
+
+### 19. What does the `AVG()` function do?
+
+* `AVG()` calculates the average of numeric values.
+
+---
+
+### 20. Why is Hive used in Big Data?
+
+* Hive simplifies big data analysis using SQL-like queries on Hadoop datasets.

@@ -1,0 +1,884 @@
+C. Create a review scrapper for any ecommerce website to fetch real time comments, reviews, ratings, comment tags, customer name using Python.
+
+
+#Import Required Libraries
+import requests
+import bs4
+import pandas as pd
+
+headers = {"User-Agent": "Mozilla/5.0"}
+
+
+url = "https://www.flipkart.com/samsung-galaxy-s25-5g-icyblue-256-gb/p/itm3c1e495903acc"
+
+response = requests.get(url, headers=headers)
+print("Status Code:", response.status_code)
+
+soup = bs4.BeautifulSoup(response.text, 'html.parser')
+
+#title
+title = soup.find('h1', {'class': 'v1zwn21l v1zwn26 _1psv1zeb9 _1psv1ze0'})
+print("Product Name :", title.get_text(strip=True))
+
+#price
+price = soup.find('div', {'class': 'v1zwn21l v1zwn20 _1psv1zeb9 _1psv1ze0'})
+print("Price :", price.get_text(strip=True))
+
+#Product rating
+ratings = soup.find_all('div', {'class': 'css-146c3p1'})
+print("Overall Product Rating :", ratings[1].text)
+
+#individual rating
+individual_ratings = soup.find_all('div', class_='_1psv1zeb9 _1psv1ze0 _1psv1zee9 _1psv1zel0')
+
+for rating in individual_ratings:
+    print("Rating:",rating.text[0],"⭐")
+
+#comment
+comment_tags = soup.find_all('div', class_= '_1psv1zeb9 _1psv1ze0 _1psv1zee9 _1psv1zel0')
+
+for comment in comment_tags:
+    print("Comment:",comment.text[1:])
+
+#customer names
+filtered_customers = []
+
+customer_name_tags = soup.find_all('div', class_= 'v1zwn21l v1zwn27 _1psv1zeb9 _1psv1ze0')
+
+# Filter out non-customer-name strings like delivery info, services, etc.
+unwanted_prefixes = [
+    "10 Days", "Cash on", "Delivery", "Flipkart", "Assured",
+    "Right Product", "No delivery", "Quick service", "by",
+    "Free test", "Nearby", "All accessories", "Expert assistance",
+    "Guaranteed help", "No hassle", "Quality checks","brand support",
+    "6 step guidance", "Authorised service", "Expert help","128 GB + 12 GB"
+]
+
+for tag in customer_name_tags:
+    text = tag.get_text(strip=True)
+
+    if text == "Flipkart Customer" or not any(
+        word in text for word in unwanted_prefixes
+    ):
+        filtered_customers.append(text)
+
+for name in filtered_customers:
+    print("Customer:", name)
+
+#review
+reviews = soup.find_all('div', class_='v1zwn21l v1zwn26 _1psv1zeb9 _1psv1ze0')
+
+for review in reviews:
+    print("Review:",review.get_text(strip=True))
+
+#save to csv file
+data = []
+
+all_ratings = soup.find_all('div', class_='_1psv1zeb9 _1psv1ze0 _1psv1zee9 _1psv1zel0')
+all_reviews = soup.find_all('div', class_='v1zwn21l v1zwn26 _1psv1zeb9 _1psv1ze0')
+comment_tags = soup.find_all('div', class_='_1psv1zeb9 _1psv1ze0 _1psv1zee9 _1psv1zel0')
+
+for customer, rating, comment, review in zip(
+    filtered_customers,
+    all_ratings,
+    comment_tags,
+    all_reviews
+):
+
+    data.append({
+        "Customer Name": customer,
+        "Rating": rating.text[0],
+        "Comment Tag": comment.text[1:],
+        "Review": review.get_text(strip=True)
+    })
+
+df = pd.DataFrame(data)
+
+df.to_csv("samsung_s25_flipkart_reviews.csv", index=False)
+
+print("Data saved successfully")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# CODE EXPLANATION (LINE BY LINE)
+
+```python
+#Import Required Libraries
+import requests
+import bs4
+import pandas as pd
+import re
+```
+
+## Explanation
+
+### `import requests`
+
+* Imports the `requests` library.
+* Used to send HTTP requests to websites.
+
+### `import bs4`
+
+* Imports BeautifulSoup library.
+* Used for HTML parsing.
+
+Parsing is the process of analyzing and extracting useful information from structured data such as HTML, XML, or text.
+
+### `import pandas as pd`
+
+* Imports pandas library as `pd`.
+* Used for handling tables and CSV files.
+
+
+---
+
+```python
+headers = {"User-Agent": "Mozilla/5.0"}
+```
+
+## Explanation
+
+### `headers`
+
+* Websites block bots sometimes.
+* Browser identity is added using User-Agent.
+
+### `"Mozilla/5.0"`
+
+* Makes request look like it came from a real browser.
+
+---
+
+```python
+url = "https://www.flipkart.com/samsung-galaxy-s25-5g-icyblue-256-gb/p/itm3c1e495903acc"
+```
+
+## Explanation
+
+### `url`
+
+* Stores webpage link of product.
+
+---
+
+```python
+response = requests.get(url, headers=headers)
+```
+
+## Explanation
+
+### `requests.get()`
+
+* Sends GET request to website.
+
+### `url`
+
+* Product page URL.
+
+### `headers=headers`
+
+* Sends browser identity.
+
+### `response`
+
+* Stores webpage response.
+
+---
+
+```python
+print("Status Code:", response.status_code)
+```
+
+## Explanation
+
+### `status_code`
+
+* Shows whether request succeeded.
+
+### Common Codes
+
+* `200` → Success
+* `404` → Page not found
+* `403` → Access denied
+
+---
+
+```python
+soup = bs4.BeautifulSoup(response.text, 'html.parser')
+```
+
+## Explanation
+
+### `BeautifulSoup()`
+
+* Parses HTML page.
+
+### `response.text`
+
+* Complete HTML source code.
+
+### `'html.parser'`
+
+* Python HTML parser.
+
+### `soup`
+
+* Parsed webpage object.
+
+
+- is used to parse the HTML content of a webpage.
+
+It converts raw HTML into a format that is easy to search and extract data from.
+
+---
+
+# PRODUCT TITLE
+
+```python
+title = soup.find('h1', {'class': 'v1zwn21l v1zwn26 _1psv1zeb9 _1psv1ze0'})
+```
+
+## Explanation
+
+### `find()`
+
+* Finds first matching tag.
+
+### `'h1'`
+
+* HTML heading tag.
+
+### `'class'`
+
+* HTML class attribute.
+
+### `title`
+
+* Stores product title tag.
+
+---
+
+```python
+print("Product Name :", title.get_text(strip=True))
+```
+
+## Explanation
+
+### `get_text()`
+
+* Extracts text from HTML tag.
+
+### `strip=True`
+
+* Removes extra spaces.
+
+---
+
+# PRODUCT PRICE
+
+```python
+price = soup.find('div', {'class': 'v1zwn21l v1zwn20 _1psv1zeb9 _1psv1ze0'})
+```
+
+## Explanation
+
+* Finds price section from webpage.
+
+---
+
+```python
+print("Price :", price.get_text(strip=True))
+```
+
+## Explanation
+
+* Prints clean price text.
+
+---
+
+# OVERALL PRODUCT RATING
+
+```python
+ratings = soup.find_all('div', {'class': 'css-146c3p1'})
+```
+
+## Explanation
+
+### `find_all()`
+
+* Finds all matching tags.
+
+### `ratings`
+
+* List containing ratings.
+
+---
+
+```python
+print("Overall Product Rating :", ratings[1].text)
+```
+
+## Explanation
+
+### `ratings[1]`
+
+* Gets second rating element.
+
+### `.text`
+
+* Extracts text.
+
+---
+
+# INDIVIDUAL RATINGS
+
+```python
+individual_ratings = soup.find_all('div', class_='_1psv1zeb9 _1psv1ze0 _1psv1zee9 _1psv1zel0')
+```
+
+## Explanation
+
+* Fetches all customer ratings.
+
+---
+
+```python
+for rating in individual_ratings:
+```
+
+## Explanation
+
+### `for`
+
+* Loop used to access each rating.
+
+---
+
+```python
+print("Rating:",rating.text[0],"⭐")
+```
+
+## Explanation
+
+### `rating.text`
+
+* Full text like `"5 Brilliant"`
+
+### `[0]`
+
+* Gets first character only.
+* Example:
+
+  * `"5 Brilliant"` → `5`
+
+---
+
+# COMMENT TAGS
+
+```python
+comment_tags = soup.find_all('div', class_= '_1psv1zeb9 _1psv1ze0 _1psv1zee9 _1psv1zel0')
+```
+
+## Explanation
+
+* Fetches comment titles like:
+
+  * Brilliant
+  * Excellent
+  * Worth every penny
+
+---
+
+```python
+for comment in comment_tags:
+```
+
+## Explanation
+
+* Loop through comment tags.
+
+---
+
+```python
+print("Comment:",comment.text[1:])
+```
+
+## Explanation
+
+### `[1:]`
+
+* Removes first character (rating).
+
+Example:
+
+* `"5Brilliant"` → `"Brilliant"`
+
+---
+
+# CUSTOMER NAMES
+
+```python
+filtered_customers = []
+```
+
+## Explanation
+
+* Empty list to store customer names.
+
+---
+
+```python
+customer_name_tags = soup.find_all('div', class_= 'v1zwn21l v1zwn27 _1psv1zeb9 _1psv1ze0')
+```
+
+## Explanation
+
+* Finds all possible customer name tags.
+
+---
+
+```python
+unwanted_prefixes = [
+```
+
+## Explanation
+
+* List of unwanted texts.
+
+---
+
+```python
+for tag in customer_name_tags:
+```
+
+## Explanation
+
+* Loop through all name tags.
+
+---
+
+```python
+text = tag.get_text(strip=True)
+```
+
+## Explanation
+
+* Extracts clean text.
+
+---
+
+```python
+if text == "Flipkart Customer" or not any(
+        word in text for word in unwanted_prefixes
+    ):
+```
+
+## Explanation
+
+### `any()`
+
+* Checks whether unwanted words exist.
+
+### `not any()`
+
+* Keeps only valid customer names.
+
+---
+
+```python
+filtered_customers.append(text)
+```
+
+## Explanation
+
+* Adds valid customer name to list.
+
+---
+
+```python
+for name in filtered_customers:
+    print("Customer:", name)
+```
+
+## Explanation
+
+* Prints customer names.
+
+---
+
+# REVIEWS
+
+```python
+reviews = soup.find_all('div', class_='v1zwn21l v1zwn26 _1psv1zeb9 _1psv1ze0')
+```
+
+## Explanation
+
+* Fetches review texts.
+
+---
+
+```python
+for review in reviews:
+```
+
+## Explanation
+
+* Loop through reviews.
+
+---
+
+```python
+print("Review:",review.get_text(strip=True))
+```
+
+## Explanation
+
+* Prints clean review text.
+
+---
+
+# SAVE DATA TO CSV
+
+```python
+data = []
+```
+
+## Explanation
+
+* Empty list for storing records.
+
+---
+
+```python
+all_ratings = soup.find_all('div', class_='_1psv1zeb9 _1psv1ze0 _1psv1zee9 _1psv1zel0')
+```
+
+## Explanation
+
+* Fetches all ratings again.
+
+---
+
+```python
+all_reviews = soup.find_all('div', class_='v1zwn21l v1zwn26 _1psv1zeb9 _1psv1ze0')
+```
+
+## Explanation
+
+* Fetches reviews again.
+
+---
+
+```python
+comment_tags = soup.find_all('div', class_='_1psv1zeb9 _1psv1ze0 _1psv1zee9 _1psv1zel0')
+```
+
+## Explanation
+
+* Fetches comment tags again.
+
+---
+
+```python
+for customer, rating, comment, review in zip(
+```
+
+## Explanation
+
+### `zip()`
+
+* Combines multiple lists together.
+
+---
+
+```python
+data.append({
+```
+
+## Explanation
+
+* Adds dictionary row into list.
+
+---
+
+```python
+"Customer Name": customer,
+```
+
+## Explanation
+
+* Stores customer name.
+
+---
+
+```python
+"Rating": rating.text[0],
+```
+
+## Explanation
+
+* Stores only rating number.
+
+---
+
+```python
+"Comment Tag": comment.text[1:],
+```
+
+## Explanation
+
+* Stores comment without rating.
+
+---
+
+```python
+"Review": review.get_text(strip=True)
+```
+
+## Explanation
+
+* Stores clean review text.
+
+---
+
+```python
+df = pd.DataFrame(data)
+```
+
+## Explanation
+
+### `DataFrame`
+
+* Converts list into table format.
+
+---
+
+```python
+df.to_csv("samsung_s25_flipkart_reviews.csv", index=False)
+```
+
+## Explanation
+
+### `to_csv()`
+
+* Saves table into CSV file.
+
+### `index=False`
+
+* Removes extra index column.
+
+---
+
+```python
+print("Data saved successfully")
+```
+
+## Explanation
+
+* Final success message.
+
+---
+
+# IMPORTANT TERMS FOR VIVA
+
+| Term          | Meaning                       |
+| ------------- | ----------------------------- |
+| Web Scraping  | Extracting data from websites |
+| BeautifulSoup | HTML parsing library          |
+| Requests      | Sends HTTP requests           |
+| HTML Parser   | Reads webpage code            |
+| CSV           | Comma Separated Values file   |
+| DataFrame     | Table format in pandas        |
+| User-Agent    | Browser identity              |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# VIVA QUESTIONS AND ANSWERS
+
+## 1. What is Web Scraping?
+
+Web scraping is the process of extracting data from websites automatically using Python programs.
+
+---
+
+## 2. Which libraries are used in this program?
+
+* requests
+* BeautifulSoup (bs4)
+* pandas
+* re
+
+---
+
+## 3. What is the use of requests library?
+
+It is used to send HTTP requests to websites.
+
+---
+
+## 4. What is BeautifulSoup?
+
+BeautifulSoup is a Python library used to parse HTML and extract webpage data.
+
+---
+
+## 5. Why is User-Agent used?
+
+User-Agent helps the request look like a real browser request and avoids blocking.
+
+---
+
+## 6. What does status code 200 mean?
+
+It means the webpage request was successful.
+
+---
+
+## 7. Difference between find() and find_all()?
+
+| find()              | find_all()          |
+| ------------------- | ------------------- |
+| Returns first match | Returns all matches |
+
+---
+
+## 8. What is HTML parsing?
+
+Reading and analyzing HTML structure of webpage.
+
+---
+
+## 9. What is the use of zip()?
+
+It combines multiple lists together element by element.
+
+---
+
+## 10. Why is pandas used?
+
+Pandas is used for handling tabular data and CSV files.
+
+---
+
+## 11. What is a DataFrame?
+
+A DataFrame is a table-like data structure in pandas.
+
+---
+
+## 12. What is CSV?
+
+CSV means Comma Separated Values file used for storing table data.
+
+---
+
+## 13. Why is index=False used?
+
+To avoid saving row numbers in CSV file.
+
+---
+
+## 14. What is get_text(strip=True)?
+
+It extracts clean text and removes extra spaces.
+
+---
+
+## 15. What does `[0]` mean in rating.text[0]?
+
+It gets the first character from string.
+
+Example:
+
+* `"5Brilliant"` → `5`
+
+---
+
+## 16. What does `[1:]` mean?
+
+It removes first character and keeps remaining string.
+
+Example:
+
+* `"5Brilliant"` → `"Brilliant"`
+
+---
+
+## 17. What is the role of loops in this program?
+
+Loops are used to access multiple reviews, ratings, and customer names.
+
+---
+
+## 18. Why are unwanted prefixes filtered?
+
+To remove irrelevant texts that are not customer names.
+
+---
+
+## 19. What file is generated at the end?
+
+`samsung_s25_flipkart_reviews.csv`
+
+---
+
+## 20. What are the applications of web scraping?
+
+* Price comparison
+* Review analysis
+* Data collection
+* Market research
+* Sentiment analysis
+

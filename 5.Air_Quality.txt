@@ -1,0 +1,522 @@
+# 5. Perform the following operations using Python on the Air quality data set
+- a. Data cleaning
+- b. Data integration
+- c. Data transformation
+- d. Error correcting
+
+
+import pandas as pd
+import numpy as np
+
+df = pd.read_csv("AQ_data.csv")   
+df.head()
+
+df.info()
+
+# Check missing values
+df.isnull().sum()
+
+
+# a. Data Cleaning
+
+# Fill missing values (example: mean for numeric columns)
+df.fillna(df.mean(numeric_only=True), inplace=True)
+
+# Drop duplicates
+df.drop_duplicates(inplace=True)
+
+# Drop useless columns (too many missing)
+df.drop(columns=['agency', 'stn_code'], inplace=True)
+
+# Fill categorical columns with mode (most frequent value)
+for col in ['location', 'type', 'location_monitoring_station']:
+    df[col] = df[col].fillna(df[col].mode()[0])
+
+# Convert date columns
+df['date'] = pd.to_datetime(df['date'], errors='coerce')
+df['sampling_date'] = pd.to_datetime(df['sampling_date'], errors='coerce')
+
+# Fill remaining missing values
+df = df.ffill().bfill()
+
+# Check missing values
+df.isnull().sum()
+
+# b. Data Integration
+
+subSet1 = df[['state', 'type']]
+subSet1.head()
+
+subSet2 = df[['location_monitoring_station','location']]
+subSet2.head()
+
+merge = pd.merge(subSet1, subSet2, left_index=True, right_index=True)
+merge.head()
+
+# c. Data Transformation
+
+# Feature Scaling - Normalize numeric columns
+from sklearn.preprocessing import MinMaxScaler
+
+scaler = MinMaxScaler()  # Scaling range is 0 to 1
+numeric_cols = df.select_dtypes(include=np.number).columns
+
+df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
+
+df[numeric_cols]
+
+# Feature engineering (example: extract year/month)
+df['year'] = df['date'].dt.year
+df['month'] = df['date'].dt.month
+df.head(3)
+
+# d. Error Correction
+
+# Example: remove negative pollutant values
+for col in numeric_cols:
+    df[col] = df[col].apply(lambda x: x if x >= 0 else np.nan)  
+
+# fill NaN again after this
+df[numeric_cols] = df[numeric_cols].ffill().bfill() 
+
+# Shape of df before removing outliers
+df.shape
+
+# Remove outliers using IQR
+Q1 = df[numeric_cols].quantile(0.25)
+Q3 = df[numeric_cols].quantile(0.75)
+IQR = Q3 - Q1
+
+df = df[~((df[numeric_cols] < (Q1 - 1.5 * IQR)) | 
+          (df[numeric_cols] > (Q3 + 1.5 * IQR))).any(axis=1)]
+
+# Shape of df after removing outliers
+df.shape
+
+# Another method to check outlier - should return all columns 0
+outliers_check = ((df[numeric_cols] < (Q1 - 1.5 * IQR)) | 
+                  (df[numeric_cols] > (Q3 + 1.5 * IQR))).sum()
+
+print(outliers_check)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+======= CODE EXPLANATION ======
+Import Libraries
+
+"import pandas as pd" : Imports Pandas library.
+Used for: handling tables/dataframes, data analysis
+"as pd" : Creates short name pd for pandas.
+
+"import numpy as np" : Imports NumPy library.
+Used for: numerical operations, arrays, NaN values
+"as np" : Creates short name np.
+
+#Load Dataset
+
+"df = pd.read_csv("AQ_data.csv")"
+Reads CSV file and stores it in DataFrame df.
+"read_csv()" : Loads CSV dataset.
+"AQ_data.csv" : Dataset file name.
+"df.head()" : Displays first 5 rows of dataset.
+
+#Dataset Information
+
+"df.info()"
+Shows: column names, data types , non-null values
+
+#Missing Values Check
+
+"df.isnull().sum()"
+Checks missing (NaN) values in each column.
+"isnull()" : Detects missing values.
+"sum()" : Counts total missing values.
+
+a. Data Cleaning
+
+# Fill Missing Numeric Values
+
+"df.fillna(df.mean(numeric_only=True), inplace=True)"
+Fills missing numeric values using column mean.
+"fillna()" : Replaces missing values.
+"mean()" : Calculates average.
+"numeric_only=True" : Uses only numeric columns.
+"inplace=True" : Updates original DataFrame.
+
+#Remove Duplicate Rows
+
+"df.drop_duplicates(inplace=True)"
+Removes repeated rows.
+
+# Drop Unwanted Columns
+
+"df.drop(columns=['agency', 'stn_code'], inplace=True)"
+Deletes unnecessary columns.
+
+#Fill Categorical Missing Values
+
+"for col in ['location', 'type', 'location_monitoring_station']: "
+Loops through selected categorical columns.
+
+"df[col] = df[col].fillna(df[col].mode()[0])"
+Fills missing values with most frequent value.
+"mode()" : Returns most common value.
+"[0] " : Selects first mode value.
+
+#Convert Date Columns
+
+"df['date'] = pd.to_datetime(df['date'], errors='coerce')"
+Converts date column into datetime format.
+"errors='coerce' " : Invalid dates become NaT.
+
+"df['sampling_date'] = pd.to_datetime(df['sampling_date'], errors='coerce')"
+Converts sampling date column to datetime format.
+
+#Fill Remaining Missing Values
+
+"df = df.ffill().bfill()"
+Fills remaining missing values.
+"ffill()" : Forward fill.
+"bfill()" : Backward fill.
+
+#Check Missing Values Again
+
+"df.isnull().sum()" : Checks whether missing values still exist.
+
+b. Data Integration
+
+#Create Subset 1
+
+"subSet1 = df[['state', 'type']]"
+Creates smaller dataset with: state, type
+
+"subSet1.head()" - Shows first 5 rows.
+
+#Create Subset 2
+
+"subSet2 = df[['location_monitoring_station','location']]"
+Creates another smaller dataset.
+"subSet2.head()" : Displays first 5 rows.
+
+# Merge Datasets
+
+"merge = pd.merge(subSet1, subSet2, left_index=True, right_index=True)"
+Combines both subsets using row indexes.
+"left_index=True" : Uses left dataset index.
+"right_index=True" : Uses right dataset index.
+
+"merge.head()" : Displays merged dataset.
+
+c. Data Transformation
+
+#Import Scaler
+
+"from sklearn.preprocessing import MinMaxScaler"
+Imports MinMaxScaler for normalization.
+Library: scikit-learn
+
+#Create Scaler Object
+
+"scaler = MinMaxScaler()" : Creates scaling object.
+
+#Select Numeric Columns
+
+"numeric_cols = df.select_dtypes(include=np.number).columns"
+Selects all numeric columns.
+"select_dtypes()"       : Filters columns by datatype.
+"include=np.number" : Chooses numeric columns only.
+
+#Scale Numeric Data
+
+"df[numeric_cols] = scaler.fit_transform(df[numeric_cols])"
+Normalizes numeric values between 0 and 1.
+"fit_transform()" : Learns and scales data together.
+
+"df[numeric_cols]" : Displays scaled numeric columns.
+
+#Feature Engineering
+
+"df['year'] = df['date'].dt.year" : Extracts year from date column.
+
+"df['month'] = df['date'].dt.month" : Extracts month from date column.
+
+"df.head(3)" : Displays first 3 rows.
+
+d. Error Correction
+
+# Remove Negative Values
+"for col in numeric_cols: " 
+Loops through numeric columns.
+
+"df[col] = df[col].apply(lambda x: x if x >= 0 else np.nan)"
+Replaces negative values with NaN.
+
+"apply()" : Applies function to each value.
+"lambda" : Anonymous small function.
+
+# Fill NaN Again
+
+"df[numeric_cols] = df[numeric_cols].ffill().bfill()"
+Fills missing values again.
+
+#Dataset Shape
+"df.shape"
+Returns:(rows, columns)
+
+## Outlier Detection
+
+#First Quartile
+"Q1 = df[numeric_cols].quantile(0.25)"
+Calculates 25th percentile.
+
+# Third Quartile  
+"Q3 = df[numeric_cols].quantile(0.75)"
+Calculates 75th percentile.
+
+# Interquartile Range:
+"IQR = Q3 - Q1" : Calculates IQR.
+Formula: IQR=Q3−Q1
+
+# Remove Outliers
+
+"df = df[~((df[numeric_cols] < (Q1 - 1.5 * IQR)) | 
+          (df[numeric_cols] > (Q3 + 1.5 * IQR))).any(axis=1)] "
+
+Removes rows containing outliers.
+
+Lower Limit=Q1−1.5×IQR
+
+Upper Limit=Q3+1.5×IQR
+
+"any(axis=1)" : Checks row-wise.
+
+" ~ " : Keeps non-outlier rows.
+
+# Shape After Outlier Removal
+
+"df.shape" : Shows updated dataset size.
+
+# Check Remaining Outliers
+"outliers_check = ((df[numeric_cols] < (Q1 - 1.5 * IQR)) | 
+                  (df[numeric_cols] > (Q3 + 1.5 * IQR))).sum()"
+
+Counts remaining outliers in each column.
+
+"print(outliers_check)"
+
+Displays outlier count column-wise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+============== VIVAAA ===========
+1. What is air quality data?
+
+Answer:
+Air quality data contains information about pollutants like:
+
+CO
+NO₂
+SO₂
+PM2.5
+used to measure pollution levels.
+🔹 2. What is data preprocessing?
+
+Answer:
+Data preprocessing is the process of:
+
+cleaning
+transforming
+organizing data
+before analysis.
+🔹 3. Why is preprocessing important?
+
+Answer:
+Preprocessing improves:
+
+data quality
+accuracy
+reliability of analysis and prediction.
+🔹 4. What is Pandas?
+
+Answer:
+Pandas is a Python library used for:
+
+data analysis
+data manipulation
+handling datasets.
+🔹 5. What is a DataFrame?
+
+Answer:
+A DataFrame is a 2-dimensional table-like structure with rows and columns.
+
+🔹 6. What does read_csv() do?
+
+Answer:
+read_csv() reads a CSV file and converts it into a DataFrame.
+
+🔹 7. What is the use of head()?
+
+Answer:
+head() displays the first 5 rows of the dataset.
+
+🔹 8. What does info() provide?
+
+Answer:
+It provides:
+
+column names
+data types
+non-null values
+memory usage.
+🔹 9. What is the purpose of describe()?
+
+Answer:
+describe() gives statistical summary like:
+
+mean
+standard deviation
+minimum
+maximum values.
+🔹 10. What are missing values?
+
+Answer:
+Missing values are empty or null values in the dataset.
+
+🔹 11. How do you check missing values?
+
+Answer:
+Using:
+df.isnull().sum()
+
+🔹 12. What is dropna()?
+
+Answer:
+dropna() removes rows containing null values.
+
+🔹 13. What is data cleaning?
+
+Answer:
+Data cleaning means removing:
+
+null values
+duplicate values
+incorrect data.
+🔹 14. What is sorting?
+
+Answer:
+Sorting arranges data in:
+
+ascending order
+descending order.
+🔹 15. What is correlation?
+
+Answer:
+Correlation shows relationship between two variables.
+
+Positive correlation → both increase
+Negative correlation → one increases, other decreases
+
+🔹 16. What is grouping in pandas?
+
+Answer:
+Grouping means combining similar data using groupby().
+
+🔹 17. What is value_counts()?
+
+Answer:
+It counts frequency of unique values in a column.
+
+🔹 18. Difference between loc[] and iloc[]?
+
+Answer:
+
+loc[]	iloc[]
+Label-based indexing	Position-based indexing
+Uses column names	Uses index numbers
+
+🔹 19. What is NumPy?
+
+Answer:
+NumPy is a Python library used for:
+
+numerical operations
+arrays
+mathematical calculations.
+
+🔹 20. What is the aim of this practical?
+
+Answer:
+The aim is:
+“To perform preprocessing and analysis on the Air Quality dataset using Python libraries like Pandas and NumPy.”

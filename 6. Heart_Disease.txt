@@ -1,0 +1,819 @@
+# 6. Visualize the data using Python libraries matplotlib, seaborn by plotting the graphs for Heart disease dataset.( Charts : Line chart, Barplot, Heatmap, Scatterplot, histogram, boxplot, violin, timeseries chart)
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df = pd.read_csv("heart.csv")
+df
+
+df = df.drop_duplicates()
+
+df.shape
+
+df.isna().sum()
+# No null values, it's clean
+
+df.columns
+
+# Line Chart
+
+# Trends between age and cholesterol.
+plt.figure()
+sns.lineplot(data=df,x=df.age,y=df.chol,hue='output')
+plt.title("Age vs Cholesterol (Line Chart)")
+plt.xlabel("Age")
+plt.ylabel("Cholesterol")
+plt.show()
+
+- The line chart shows how cholesterol levels vary with age, indicating slight fluctuations with no strong linear trend between age and cholesterol
+
+# Barplot
+
+# Compares values between different categories.
+plt.figure()
+sns.barplot(x='sex', y='chol', data=df)
+plt.title("Sex vs Cholesterol")
+plt.xlabel("Sex")
+plt.ylabel("Cholesterol")
+plt.show()
+
+- The bar plot shows that average cholesterol levels are slightly higher in females (0) compared to males (1).
+
+
+# Heatmap
+
+# Displays correlation between variables using colors.
+plt.figure(figsize=(10,6))
+sns.heatmap(df.corr(),cmap = 'YlGnBu', annot = True)
+plt.title("Correlation Heatmap")
+plt.show()
+
+- The heatmap shows relationships between heart disease attributes, where chest pain type (cp=0.43) and maximum heart rate (thalachh=0.42) have positive correlation with heart disease (output).
+
+
+# Scatterplot
+
+# Visualize relationship between age and maximum heart rate (thalachh).
+plt.figure()
+sns.scatterplot(x='age', y='thalachh', hue='output', data=df, alpha=0.7)
+plt.title("Age vs Max Heart Rate (Colored by Disease Output)")
+plt.xlabel("Age")
+plt.ylabel("thalachh")
+plt.show()
+
+- The scatter plot shows a negative trend where maximum heart rate tends to decrease with increasing age, with some variation between disease and non-disease cases
+
+
+# Histogram
+
+# Shows the Distribution of cp(Chest Pain) types with respect to male and female
+plt.figure()
+sns.histplot(data=df, x='cp', hue='sex')
+plt.title("Distribution of cp types w.r.t sex")
+plt.xlabel("cp")
+plt.ylabel("count")
+plt.show()
+
+- The histogram shows that chest pain type 0 is most common, and males have higher frequency across all chest pain categories compared to females.
+
+
+# Boxplot 
+
+# Check spread and outliers in resting blood pressure (trtbps).
+plt.figure()
+sns.boxplot(x='output', y='trtbps', data=df)
+plt.title("Resting Blood Pressure by Heart Disease Output")
+plt.xlabel("output")
+plt.ylabel("trtbps")
+plt.show()
+
+- The box plot shows similar median blood pressure for both groups, but highlights the presence of outliers in resting blood pressure.
+
+# Violin 
+
+# Shows data distribution along with its density.
+plt.figure()
+sns.violinplot(x='output', y='age', data=df)
+plt.title("Age Distribution by Heart Disease")
+plt.xlabel("output")
+plt.ylabel("age")
+plt.show()
+
+- The violin plot shows that age distribution is slightly higher for patients with heart disease, indicating increased risk with age
+
+
+# Timeseries chart
+
+# how heart rate (thalachh) varies overtime across the first 50 observations
+df_small = df.iloc[:50]   # first 50 rows
+
+plt.figure()
+plt.plot(df_small.index, df_small['thalachh'])
+plt.title("Time Series (First 50 Records)")
+plt.xlabel("Index")
+plt.ylabel("Heart Rate")
+plt.show()
+
+- The time series plot shows fluctuations in heart rate across observations, with no clear increasing or decreasing trend
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+====== CODE EXPLANATION ==========
+```python
+import pandas as pd
+```
+
+* `"import"` : Keyword used to include a library in Python.
+* `"pandas"` : Python library used for data analysis and handling tables/data.
+* `"as"` : Gives another short name (alias) to library.
+* `"pd"` : Alias name for pandas library.
+
+```python
+import matplotlib.pyplot as plt
+```
+
+* `"matplotlib"` : Python library used for plotting graphs.
+* `"pyplot"` : Module of matplotlib used to create charts and graphs.
+* `"as plt"` : Gives short alias name `plt`.
+
+```python
+import seaborn as sns
+```
+
+* `"seaborn"` : Advanced visualization library built on matplotlib.
+* `"as sns"` : Alias name for seaborn library.
+
+---
+
+```python
+df = pd.read_csv("heart.csv")
+```
+
+* `"df"` : Variable storing dataset in tabular form.
+* `"="` : Assignment operator.
+* `"pd.read_csv()"` : Reads CSV file into DataFrame.
+* `"heart.csv"` : Heart disease dataset filename.
+
+```python
+df
+```
+
+* `"df"` : Displays complete dataset.
+
+---
+
+```python
+df = df.drop_duplicates()
+```
+
+* `"drop_duplicates()"` : Removes duplicate rows from dataset.
+* `"df = "` : Stores cleaned dataset back into df.
+
+```python
+df.shape
+```
+
+* `"shape"` : Returns number of rows and columns in dataset.
+
+---
+
+```python
+df.isna().sum()
+```
+
+* `"isna()"` : Checks missing/null values.
+* `"sum()"` : Counts total null values column-wise.
+
+```python
+# No null values, it's clean
+```
+
+* Comment explaining dataset has no missing values.
+
+---
+
+```python
+df.columns
+```
+
+* `"columns"` : Displays all column names in dataset.
+
+---
+
+# Line Chart
+
+### Definition:
+
+* **Line Chart** : Graph that connects data points using lines to show trends over continuous data.
+
+```python
+plt.figure()
+```
+
+* `"figure()"` : Creates a new graph figure.
+
+```python
+sns.lineplot(data=df,x=df.age,y=df.chol,hue='output')
+```
+
+* `"lineplot()"` : Creates line chart.
+* `"data=df"` : Uses dataset df.
+* `"x=df.age"` : Age column on X-axis.
+* `"y=df.chol"` : Cholesterol column on Y-axis.
+* `"hue='output'"` : Different colors based on heart disease output.
+
+```python
+plt.title("Age vs Cholesterol (Line Chart)")
+```
+
+* `"title()"` : Adds chart title.
+
+```python
+plt.xlabel("Age")
+```
+
+* `"xlabel()"` : Labels X-axis.
+
+```python
+plt.ylabel("Cholesterol")
+```
+
+* `"ylabel()"` : Labels Y-axis.
+
+```python
+plt.show()
+```
+
+* `"show()"` : Displays graph.
+
+### Explanation:
+
+* The line chart shows cholesterol variation with age.
+* Slight fluctuations are visible.
+* No strong linear relationship between age and cholesterol.
+
+---
+
+# Barplot
+
+### Definition:
+
+* **Barplot** : Graph that compares numerical values between categories using bars.
+
+```python
+plt.figure()
+```
+
+* Creates new figure.
+
+```python
+sns.barplot(x='sex', y='chol', data=df)
+```
+
+* `"barplot()"` : Creates bar graph.
+* `"x='sex'"` : Gender on X-axis.
+* `"y='chol'"` : Cholesterol on Y-axis.
+* `"data=df"` : Uses dataset df.
+
+```python
+plt.title("Sex vs Cholesterol")
+```
+
+* Adds title.
+
+```python
+plt.xlabel("Sex")
+```
+
+* Labels X-axis.
+
+```python
+plt.ylabel("Cholesterol")
+```
+
+* Labels Y-axis.
+
+```python
+plt.show()
+```
+
+* Displays graph.
+
+### Explanation:
+
+* Barplot compares average cholesterol levels of males and females.
+* Females (0) have slightly higher cholesterol than males (1).
+
+---
+
+# Heatmap
+
+### Definition:
+
+* **Heatmap** : Visualization using colors to represent correlation or intensity values.
++1 → Strong positive relation
+-1 → Strong negative relation
+0 → No relation
+
+```python
+plt.figure(figsize=(10,6))
+```
+
+* `"figsize=(10,6)"` : Sets graph width and height.
+
+```python
+sns.heatmap(df.corr(),cmap = 'YlGnBu', annot = True)
+```
+
+* `"heatmap()"` : Creates heatmap.
+* `"df.corr()"` : Finds correlation between numerical columns.
+* `"cmap='YlGnBu'"` : Color theme.
+* `"annot=True"` : Displays correlation values on heatmap.
+
+```python
+plt.title("Correlation Heatmap")
+```
+
+* Adds title.
+
+```python
+plt.show()
+```
+
+* Displays graph.
+
+### Explanation:
+
+* Heatmap shows relationships between heart disease attributes.
+* Positive correlation:
+
+  * `cp` (Chest pain type) → 0.43
+  * `thalachh` (Maximum heart rate) → 0.42
+* Higher positive value means stronger relationship.
+
+---
+
+# Scatterplot
+
+### Definition:
+
+* **Scatterplot** : Graph showing relationship between two numerical variables using dots.
+
+```python
+plt.figure()
+```
+
+* Creates figure.
+
+```python
+sns.scatterplot(x='age', y='thalachh', hue='output', data=df, alpha=0.7)
+```
+
+* `"scatterplot()"` : Creates scatter graph.
+* `"x='age'"` : Age on X-axis.
+* `"y='thalachh'"` : Maximum heart rate on Y-axis.
+* `"hue='output'"` : Different colors for disease output.
+* `"alpha=0.7"` : Controls transparency of points.
+
+```python
+plt.title("Age vs Max Heart Rate (Colored by Disease Output)")
+```
+
+* Adds title.
+
+```python
+plt.xlabel("Age")
+```
+
+* Labels X-axis.
+
+```python
+plt.ylabel("thalachh")
+```
+
+* Labels Y-axis.
+
+```python
+plt.show()
+```
+
+* Displays graph.
+
+### Explanation:
+
+* Scatterplot shows relationship between age and heart rate.
+* Maximum heart rate decreases as age increases.
+* Different colors show disease and non-disease cases.
+
+---
+
+# Histogram
+
+### Definition:
+
+* **Histogram** : Graph showing frequency distribution of continuous or categorical data.
+
+```python
+plt.figure()
+```
+
+* Creates figure.
+
+```python
+sns.histplot(data=df, x='cp', hue='sex')
+```
+
+* `"histplot()"` : Creates histogram.
+* `"x='cp'"` : Chest pain type on X-axis.
+* `"hue='sex'"` : Different colors for gender.
+
+```python
+plt.title("Distribution of cp types w.r.t sex")
+```
+
+* Adds title.
+
+```python
+plt.xlabel("cp")
+```
+
+* Labels X-axis.
+
+```python
+plt.ylabel("count")
+```
+
+* Labels Y-axis.
+
+```python
+plt.show()
+```
+
+* Displays graph.
+
+### Explanation:
+
+* Histogram shows frequency of chest pain types.
+* Chest pain type 0 is most common.
+* Males appear more frequently in all categories.
+
+---
+
+# Boxplot
+
+### Definition:
+
+* **Boxplot** : Graph showing spread, median, quartiles, and outliers of data.
+
+```python
+plt.figure()
+```
+
+* Creates figure.
+
+```python
+sns.boxplot(x='output', y='trtbps', data=df)
+```
+
+* `"boxplot()"` : Creates boxplot.
+* `"x='output'"` : Heart disease output on X-axis.
+* `"y='trtbps'"` : Resting blood pressure on Y-axis.
+
+```python
+plt.title("Resting Blood Pressure by Heart Disease Output")
+```
+
+* Adds title.
+
+```python
+plt.xlabel("output")
+```
+
+* Labels X-axis.
+
+```python
+plt.ylabel("trtbps")
+```
+
+* Labels Y-axis.
+
+```python
+plt.show()
+```
+
+* Displays graph.
+
+### Explanation:
+
+* Boxplot compares blood pressure distribution.
+* Median values are similar.
+* Some outliers are present.
+
+### Important Terms:
+
+* **Median** : Middle value of dataset.
+* **Outlier** : Value much higher or lower than normal values.
+
+---
+
+# Violin Plot
+
+### Definition:
+
+* **Violin Plot** : Combination of boxplot and density plot showing distribution shape.
+
+```python
+plt.figure()
+```
+
+* Creates figure.
+
+```python
+sns.violinplot(x='output', y='age', data=df)
+```
+
+* `"violinplot()"` : Creates violin graph.
+* `"x='output'"` : Disease output on X-axis.
+* `"y='age'"` : Age on Y-axis.
+
+```python
+plt.title("Age Distribution by Heart Disease")
+```
+
+* Adds title.
+
+```python
+plt.xlabel("output")
+```
+
+* Labels X-axis.
+
+```python
+plt.ylabel("age")
+```
+
+* Labels Y-axis.
+
+```python
+plt.show()
+```
+
+* Displays graph.
+
+### Explanation:
+
+* Violin plot shows age distribution and density.
+* Heart disease patients tend to be older.
+
+### Important Term:
+
+* **Density** : Concentration/spread of data values.
+
+---
+
+# Time Series Chart
+
+### Definition:
+
+* **Time Series Chart** : Graph showing data changes over time or sequence.
+
+```python
+df_small = df.iloc[:50]
+```
+
+* `"iloc[:50]"` : Selects first 50 rows.
+* `"df_small"` : Stores smaller dataset.
+
+```python
+plt.figure()
+```
+
+* Creates figure.
+
+```python
+plt.plot(df_small.index, df_small['thalachh'])
+```
+
+* `"plot()"` : Creates line/time series graph.
+* `"df_small.index"` : Row numbers on X-axis.
+* `"df_small['thalachh']"` : Heart rate values on Y-axis.
+
+```python
+plt.title("Time Series (First 50 Records)")
+```
+
+* Adds title.
+
+```python
+plt.xlabel("Index")
+```
+
+* Labels X-axis.
+
+```python
+plt.ylabel("Heart Rate")
+```
+
+* Labels Y-axis.
+
+```python
+plt.show()
+```
+
+* Displays graph.
+
+### Explanation:
+
+* Time series chart shows heart rate changes across observations.
+* Heart rate fluctuates without fixed trend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+========== VIVAAAAAA==========
+
+
+### 1. What is Data Visualization?
+
+* Data Visualization is the graphical representation of data using charts and graphs.
+
+---
+
+### 2. What is the use of Python in Data Visualization?
+
+* Python provides libraries like `matplotlib` and `seaborn` for creating graphs and analyzing data visually.
+
+---
+
+### 3. What is Pandas?
+
+* `Pandas` is a Python library used for data manipulation and analysis using DataFrames.
+
+---
+
+### 4. What is a DataFrame?
+
+* A DataFrame is a two-dimensional table structure in pandas containing rows and columns.
+
+---
+
+### 5. Why do we use `read_csv()`?
+
+* `read_csv()` is used to load CSV dataset files into a DataFrame.
+
+---
+
+### 6. What is the purpose of `drop_duplicates()`?
+
+* It removes duplicate rows from the dataset.
+
+---
+
+### 7. What does `isna().sum()` do?
+
+* It checks and counts missing/null values in each column.
+
+---
+
+### 8. What is Matplotlib?
+
+* Matplotlib is a Python library used for creating basic charts and graphs.
+
+---
+
+### 9. What is Seaborn?
+
+* Seaborn is a Python visualization library built on matplotlib for attractive statistical graphics.
+
+---
+
+### 10. What is a Line Chart?
+
+* A line chart shows trends or changes in data using connected lines.
+
+---
+
+### 11. What is a Bar Plot?
+
+* A bar plot compares values between different categories using bars.
+
+---
+
+### 12. What is a Heatmap?
+
+* A heatmap displays correlation or intensity values using colors.
+
+---
+
+### 13. What is Correlation?
+
+* Correlation measures the relationship between two variables.
+* Value ranges from `-1` to `+1`.
+
+---
+
+### 14. What is a Scatter Plot?
+
+* A scatter plot shows the relationship between two numerical variables using dots.
+
+---
+
+### 15. What is a Histogram?
+
+* A histogram shows the frequency distribution of data.
+
+---
+
+### 16. What is a Box Plot?
+
+* A box plot shows median, quartiles, spread, and outliers of data.
+
+---
+
+### 17. What is an Outlier?
+
+* An outlier is a value that is much higher or lower than other values.
+
+---
+
+### 18. What is a Violin Plot?
+
+* A violin plot shows both distribution and density of data.
+
+---
+
+### 19. What is a Time Series Chart?
+
+* A time series chart shows how data changes over time or sequence.
+
+---
+
+### 20. Why is visualization important in Heart Disease analysis?
+
+* Visualization helps identify patterns, trends, correlations, and risk factors related to heart disease quickly and clearly.

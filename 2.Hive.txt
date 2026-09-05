@@ -1,0 +1,963 @@
+
+# Import code file :
+- Setting > Shared Folders > Path + > Folder Path > Select folder > Select Auto-mount & Auto-... > ok > ok
+- Start Cloudera > terminal :
+       sudo mount -t vboxsf folder_name /mnt
+- If this doesn't work > go to terminal : 
+       sudo mkdir /mnt/folder_name
+       sudo mount -t vboxsf folder_name /mnt/folder_name
+
+
+*** (DROP - DROP DATABASE FlightDB CASCADE;) ***
+
+
+
+# Open terminal :
+
+
+ hive 
+
+
+-- 1. Create Database
+
+
+CREATE DATABASE FlightDB;
+
+USE FlightDB;
+
+-- Drop tables if already exist
+DROP TABLE IF EXISTS FlightInfo;
+DROP TABLE IF EXISTS AirlineInfo;
+DROP TABLE IF EXISTS ExternalFlightInfo;
+
+
+-- 2. Create Flight Information Table
+
+
+CREATE TABLE FlightInfo (
+FlightID INT,
+FlightDate STRING,
+Airline STRING,
+Origin STRING,
+Destination STRING,
+DepartureDelay INT,
+ArrivalDelay INT
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+
+
+****** Data Show NULL, Use this *****
+CREATE TABLE FlightInfo (
+    FlightID STRING,
+    FlightDate STRING,
+    Airline STRING,
+    Origin STRING,
+    Destination STRING,
+    DepartureDelay INT,
+    ArrivalDelay STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+
+
+-- 3. Alter Table Operations
+
+
+-- Rename table
+ALTER TABLE FlightInfo
+RENAME TO FlightDetails;
+
+-- Rename back to original name
+ALTER TABLE FlightDetails
+RENAME TO FlightInfo;
+
+
+-- 4. Create External Hive Table
+
+
+CREATE EXTERNAL TABLE ExternalFlightInfo (
+    FlightID INT,
+    FlightDate STRING,
+    Airline STRING,
+    Origin STRING,
+    Destination STRING,
+    DepartureDelay INT,
+    ArrivalDelay INT
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LOCATION '/user/hadoop/flightdata';
+
+(--- Error:
+Since your file is in: /mnt/flightdata.csv
+Open another terminal, bash:
+hdfs dfs -mkdir /user/hadoop/flightdata
+hdfs dfs -put /mnt/flightdata.csv /user/hadoop/flightdata/
+** Refresh 
+---)
+
+
+-- 5. Load Data into Hive Table
+
+
+LOAD DATA LOCAL INPATH '/home/cloudera/Documents/flightdata.csv'
+INTO TABLE FlightInfo;
+
+
+(--- Error, use :
+LOAD DATA INPATH '/user/hadoop/flightdata/flightdata.csv'
+INTO TABLE FlightInfo;
+---)
+
+(--- Again Error:
+Repeat : Open another terminal, bash:
+hdfs dfs -mkdir /user/hadoop/flightdata
+hdfs dfs -put /mnt/flightdata.csv /user/hadoop/flightdata/
+** Refresh 
+---)
+
+
+-- 6. Insert New Values
+
+
+INSERT INTO FlightInfo
+VALUES
+(101,'2008-01-10','AirIndia','Mumbai','Delhi',20,15);
+
+-- Display records
+SELECT * FROM FlightInfo;
+
+
+-- 7. Create Airline Information Table
+
+
+CREATE TABLE AirlineInfo (
+    AirlineID INT,
+    Airline STRING,
+    Country STRING
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+
+
+-- 8. Insert Values into AirlineInfo
+
+
+INSERT INTO AirlineInfo VALUES
+(1,'AirIndia','India'),
+(2,'Indigo','India'),
+(3,'Emirates','UAE'),
+(4,'SpiceJet','India'),
+(5,'Vistara','India'),
+(6,'AkasaAir','India');
+
+-- Display AirlineInfo table
+SELECT * FROM AirlineInfo;
+
+
+-- 9. Join Tables Using HiveQL
+
+SELECT
+F.FlightID,
+F.Airline,
+A.Country,
+F.Origin,
+F.Destination
+FROM FlightInfo F
+JOIN AirlineInfo A
+ON (F.Airline = A.Airline);
+
+
+-- 10. Create Index on Flight Information Table
+
+
+CREATE INDEX FlightIndex
+ON TABLE FlightInfo (Airline)
+AS 'COMPACT'
+WITH DEFERRED REBUILD;
+
+-- Rebuild Index
+ALTER INDEX FlightIndex
+ON FlightInfo
+REBUILD;
+
+-- Query using indexed column
+SELECT *
+FROM FlightInfo
+WHERE Airline = 'AirIndia';
+
+
+-- 11. Find Average Departure Delay Per Day in 2008
+
+
+SELECT
+FlightDate,
+AVG(DepartureDelay) AS Avg_Departure_Delay
+FROM FlightInfo
+WHERE FlightDate LIKE '2008%'
+GROUP BY FlightDate;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Hive Flight Database Practical – Line by Line Explanation
+
+# Start Hive
+
+```sql id="jlwm0y"
+hive
+```
+
+* `"hive"` : Starts Hive shell.
+
+---
+
+# 1. Create Database
+
+```sql id="jlwm0z"
+CREATE DATABASE FlightDB;
+```
+
+* `"CREATE DATABASE"` : Creates new database.
+* `"FlightDB"` : Database name.
+
+### Explanation:
+
+* Creates database named `FlightDB`.
+
+---
+
+```sql id="jlwm10"
+USE FlightDB;
+```
+
+* `"USE"` : Selects database.
+* `"FlightDB"` : Database name.
+
+### Explanation:
+
+* Makes `FlightDB` active database.
+
+---
+
+# Drop Tables
+
+```sql id="jlwm11"
+DROP TABLE IF EXISTS FlightInfo;
+```
+
+* `"DROP TABLE"` : Deletes table.
+* `"IF EXISTS"` : Avoids error if table not present.
+* `"FlightInfo"` : Table name.
+
+### Explanation:
+
+* Deletes `FlightInfo` table if it exists.
+
+---
+
+```sql id="jlwm12"
+DROP TABLE IF EXISTS AirlineInfo;
+```
+
+* Deletes `AirlineInfo` table.
+
+---
+
+```sql id="jlwm13"
+DROP TABLE IF EXISTS ExternalFlightInfo;
+```
+
+* Deletes `ExternalFlightInfo` table.
+
+---
+
+# 2. Create Flight Information Table
+
+```sql id="jlwm14"
+CREATE TABLE FlightInfo (
+```
+
+* `"CREATE TABLE"` : Creates new table.
+* `"FlightInfo"` : Table name.
+
+---
+
+```sql id="jlwm15"
+FlightID INT,
+```
+
+* `"FlightID"` : Flight ID column.
+* `"INT"` : Integer datatype.
+
+---
+
+```sql id="jlwm16"
+FlightDate STRING,
+```
+
+* `"FlightDate"` : Flight date column.
+* `"STRING"` : Text datatype.
+
+---
+
+```sql id="jlwm17"
+Airline STRING,
+Origin STRING,
+Destination STRING,
+```
+
+* `"Airline"` : Airline company name.
+* `"Origin"` : Departure location.
+* `"Destination"` : Arrival location.
+
+---
+
+```sql id="jlwm18"
+DepartureDelay INT,
+ArrivalDelay INT
+```
+
+* `"DepartureDelay"` : Delay during departure.
+* `"ArrivalDelay"` : Delay during arrival.
+
+---
+
+```sql id="jlwm19"
+ROW FORMAT DELIMITED
+```
+
+* `"ROW FORMAT DELIMITED"` : Data stored in delimited format.
+
+---
+
+```sql id="jlwm1a"
+FIELDS TERMINATED BY ','
+```
+
+* `"FIELDS TERMINATED BY ','"` : Columns separated by commas.
+
+---
+
+```sql id="jlwm1b"
+STORED AS TEXTFILE;
+```
+
+* `"STORED AS TEXTFILE"` : Data stored as text file.
+
+### Explanation:
+
+* Creates table for flight records.
+
+---
+
+# If NULL Values Appear
+
+```sql id="jlwm1c"
+FlightID STRING,
+```
+
+* Changes datatype from `INT` to `STRING`.
+
+### Explanation:
+
+* Used when integer parsing issues cause NULL values.
+
+---
+
+# 3. Alter Table Operations
+
+## Rename Table
+
+```sql id="jlwm1d"
+ALTER TABLE FlightInfo
+RENAME TO FlightDetails;
+```
+
+* `"ALTER TABLE"` : Modifies existing table.
+* `"RENAME TO"` : Changes table name.
+* `"FlightDetails"` : New table name.
+
+### Explanation:
+
+* Renames `FlightInfo` to `FlightDetails`.
+
+---
+
+## Rename Back
+
+```sql id="jlwm1e"
+ALTER TABLE FlightDetails
+RENAME TO FlightInfo;
+```
+
+* Renames table back to `FlightInfo`.
+
+---
+
+# 4. Create External Hive Table
+
+```sql id="jlwm1f"
+CREATE EXTERNAL TABLE ExternalFlightInfo (
+```
+
+* `"EXTERNAL TABLE"` : Hive controls metadata only.
+
+### Difference:
+
+* Dropping external table does not delete actual data.
+
+---
+
+```sql id="jlwm1g"
+LOCATION '/user/hadoop/flightdata';
+```
+
+* `"LOCATION"` : HDFS storage path.
+
+### Explanation:
+
+* Reads data from HDFS location.
+
+---
+
+# HDFS Commands
+
+```bash id="jlwm1h"
+hdfs dfs -mkdir /user/hadoop/flightdata
+```
+
+* `"hdfs dfs"` : HDFS filesystem command.
+* `"-mkdir"` : Creates directory.
+
+### Explanation:
+
+* Creates folder in HDFS.
+
+---
+
+```bash id="jlwm1i"
+hdfs dfs -put /mnt/flightdata.csv /user/hadoop/flightdata/
+```
+
+* `"-put"` : Uploads local file to HDFS.
+* `"/mnt/flightdata.csv"` : Source file.
+* `"/user/hadoop/flightdata/"` : Destination path.
+
+### Explanation:
+
+* Uploads CSV file to HDFS.
+
+---
+
+# 5. Load Data into Hive Table
+
+```sql id="jlwm1j"
+LOAD DATA LOCAL INPATH '/home/cloudera/Documents/flightdata.csv'
+INTO TABLE FlightInfo;
+```
+
+* `"LOAD DATA"` : Loads file into Hive table.
+* `"LOCAL"` : File from local system.
+* `"INPATH"` : File path.
+* `"INTO TABLE"` : Destination table.
+
+### Explanation:
+
+* Loads local CSV file into `FlightInfo`.
+
+---
+
+# Alternative Load from HDFS
+
+```sql id="jlwm1k"
+LOAD DATA INPATH '/user/hadoop/flightdata/flightdata.csv'
+INTO TABLE FlightInfo;
+```
+
+* Loads file directly from HDFS.
+
+---
+
+# 6. Insert New Values
+
+```sql id="jlwm1l"
+INSERT INTO FlightInfo
+VALUES
+(101,'2008-01-10','AirIndia','Mumbai','Delhi',20,15);
+```
+
+### Explanation of Values:
+
+* `101` → Flight ID
+* `'2008-01-10'` → Flight Date
+* `'AirIndia'` → Airline
+* `'Mumbai'` → Origin
+* `'Delhi'` → Destination
+* `20` → Departure Delay
+* `15` → Arrival Delay
+
+---
+
+```sql id="jlwm1m"
+SELECT * FROM FlightInfo;
+```
+
+* `"SELECT *"` : Displays all records.
+* `"FROM"` : Source table.
+
+### Explanation:
+
+* Shows all table data.
+
+---
+
+# 7. Create Airline Information Table
+
+```sql id="jlwm1n"
+CREATE TABLE AirlineInfo (
+```
+
+* Creates airline information table.
+
+---
+
+```sql id="jlwm1o"
+AirlineID INT,
+Airline STRING,
+Country STRING
+)
+```
+
+* `"AirlineID"` : Airline identifier.
+* `"Airline"` : Airline name.
+* `"Country"` : Country name.
+
+---
+
+# 8. Insert Values into AirlineInfo
+
+```sql id="jlwm1p"
+INSERT INTO AirlineInfo VALUES
+```
+
+* Inserts records into table.
+
+---
+
+```sql id="jlwm1q"
+(1,'AirIndia','India'),
+(2,'Indigo','India')
+```
+
+* Adds airline details.
+
+---
+
+```sql id="jlwm1r"
+SELECT * FROM AirlineInfo;
+```
+
+* Displays airline table records.
+
+---
+
+# 9. Join Tables Using HiveQL
+
+```sql id="jlwm1s"
+SELECT
+F.FlightID,
+F.Airline,
+A.Country,
+F.Origin,
+F.Destination
+```
+
+* `"F"` : Alias for FlightInfo.
+* `"A"` : Alias for AirlineInfo.
+
+### Explanation:
+
+* Selects required columns.
+
+---
+
+```sql id="jlwm1t"
+FROM FlightInfo F
+```
+
+* Uses `FlightInfo` table.
+
+---
+
+```sql id="jlwm1u"
+JOIN AirlineInfo A
+```
+
+* `"JOIN"` : Combines two tables.
+
+---
+
+```sql id="jlwm1v"
+ON (F.Airline = A.Airline);
+```
+
+* `"ON"` : Join condition.
+* Matches airline names.
+
+### Explanation:
+
+* Combines flight and airline data.
+
+---
+
+# 10. Create Index
+
+```sql id="’winil"
+CREATE INDEX FlightIndex
+```
+
+* `"CREATE INDEX"` : Creates index for faster search.
+* `"FlightIndex"` : Index name.
+
+---
+
+```sql id="ecp5il"
+ON TABLE FlightInfo (Airline)
+```
+
+* Creates index on `Airline` column.
+
+---
+
+```sql id="6egjlwm"
+AS 'COMPACT'
+```
+
+* `"COMPACT"` : Hive compact index type.
+
+---
+
+```sql id="jlwm1w"
+WITH DEFERRED REBUILD;
+```
+
+* Index built later manually.
+
+---
+
+```sql id="jlwm1x"
+ALTER INDEX FlightIndex
+ON FlightInfo
+REBUILD;
+```
+
+* `"REBUILD"` : Builds the index.
+
+---
+
+```sql id="jlwm1y"
+SELECT *
+FROM FlightInfo
+WHERE Airline = 'AirIndia';
+```
+
+* Retrieves records where airline is AirIndia.
+
+### Explanation:
+
+* Query uses indexed column for faster searching.
+
+---
+
+# 11. Average Departure Delay Per Day
+
+```sql id="jlwm1z"
+SELECT
+FlightDate,
+AVG(DepartureDelay) AS Avg_Departure_Delay
+```
+
+* `"AVG()"` : Calculates average.
+* `"AS"` : Gives alias name.
+
+---
+
+```sql id="jlwm20"
+FROM FlightInfo
+```
+
+* Uses `FlightInfo` table.
+
+---
+
+```sql id="jlwm21"
+WHERE FlightDate LIKE '2008%'
+```
+
+* `"LIKE"` : Pattern matching operator.
+* `'2008%'` : Dates starting with 2008.
+
+### Explanation:
+
+* Filters only 2008 records.
+
+---
+
+```sql id="jlwm22"
+GROUP BY FlightDate;
+```
+
+* `"GROUP BY"` : Groups records by date.
+
+### Explanation:
+
+* Calculates average departure delay for each date in 2008.
+
+---
+
+# Important Definitions
+
+## HiveQL
+
+* SQL-like query language used in Hive.
+
+## External Table
+
+* Table where data remains outside Hive warehouse.
+
+## Join
+
+* Combines rows from multiple tables.
+
+## Index
+
+* Improves query performance.
+
+## Aggregate Function
+
+* Function performing calculations on multiple rows like AVG, SUM, COUNT.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 20 Important Viva Questions with Short Answers (Hive – FlightDB)
+
+---
+
+## 1. What is Hive?
+
+**Answer:**
+Apache Hive is a data warehouse tool used on Hadoop for querying and analyzing large datasets using HiveQL.
+
+---
+
+## 2. What is HiveQL?
+
+**Answer:**
+HiveQL is an SQL-like language used in Hive to perform database operations.
+
+---
+
+## 3. What is the difference between Hive and SQL?
+
+**Answer:**
+SQL works on traditional databases, while Hive works on Hadoop distributed storage.
+
+---
+
+## 4. What is a database in Hive?
+
+**Answer:**
+A database is a collection of related tables.
+
+---
+
+## 5. Why do we use `CREATE DATABASE`?
+
+**Answer:**
+It is used to create a new database in Hive.
+
+---
+
+## 6. What is the purpose of `USE FlightDB`?
+
+**Answer:**
+It selects the FlightDB database for performing operations.
+
+---
+
+## 7. Why is `DROP TABLE IF EXISTS` used?
+
+**Answer:**
+It deletes a table safely without showing an error if the table does not exist.
+
+---
+
+## 8. What is the difference between Managed Table and External Table?
+
+**Answer:**
+
+* Managed Table → Hive controls data and metadata.
+* External Table → Hive controls only metadata; data remains in HDFS.
+
+---
+
+## 9. What is HDFS?
+
+**Answer:**
+Hadoop Distributed File System is Hadoop’s distributed storage system used to store big data files.
+
+---
+
+## 10. What does `ROW FORMAT DELIMITED` mean?
+
+**Answer:**
+It tells Hive that the data fields are separated using delimiters like commas.
+
+---
+
+## 11. Why do we use `FIELDS TERMINATED BY ','`?
+
+**Answer:**
+It specifies that columns in the file are separated by commas.
+
+---
+
+## 12. What is the use of `STORED AS TEXTFILE`?
+
+**Answer:**
+It stores table data in plain text format.
+
+---
+
+## 13. Why was `INT` changed to `STRING` in the table?
+
+**Answer:**
+To avoid NULL values caused by invalid numeric data.
+
+---
+
+## 14. What is the purpose of `LOAD DATA` command?
+
+**Answer:**
+It loads data from local system or HDFS into a Hive table.
+
+---
+
+## 15. Difference between `LOCAL INPATH` and `INPATH`?
+
+**Answer:**
+
+* `LOCAL INPATH` → Loads file from local Linux system.
+* `INPATH` → Loads file from HDFS.
+
+---
+
+## 16. What is a JOIN in Hive?
+
+**Answer:**
+JOIN combines records from multiple tables based on a common column.
+
+---
+
+## 17. Why is `GROUP BY` used?
+
+**Answer:**
+It groups similar records together for aggregate operations like AVG, SUM, COUNT.
+
+---
+
+## 18. What is the use of `AVG()` function?
+
+**Answer:**
+It calculates the average value of a numeric column.
+
+---
+
+## 19. What is indexing in Hive?
+
+**Answer:**
+Indexing improves query searching speed on specific columns.
+
+---
+
+## 20. What is the purpose of `WHERE` clause?
+
+**Answer:**
+It filters records based on a condition.

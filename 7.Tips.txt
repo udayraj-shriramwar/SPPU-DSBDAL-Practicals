@@ -1,0 +1,949 @@
+# 7. Visualize the data using Python libraries matplotlib, seaborn by plotting the graphs for tips dataset.( Charts : Line chart, Barplot, Heatmap, Scatterplot, histogram, boxplot, violin, timeseries chart)
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df = pd.read_csv("tips (2).csv")   # or your file name
+df
+
+df = df.drop_duplicates()
+
+df.shape
+
+df.columns
+
+df.info()
+
+# Line Chart
+
+# Tip increases as no of size increases
+plt.figure()
+sns.lineplot(data=df, x='size', y='tip')
+plt.title("Size vs Tip (Line Chart)")
+plt.xlabel("Size")
+plt.ylabel("Tip")
+plt.show()
+
+- The line chart shows that tips generally increase as the size increases.
+
+# Bar Plot
+
+# Which day has the highest average tips.
+plt.figure()
+sns.barplot(data=df, x='day', y='total_bill', palette='Set1')
+plt.title("Average Total Bill by Day")
+plt.xlabel("Day")
+plt.ylabel("Total Bill")
+plt.show()
+
+- The bar plot shows that Total Bill vary across days, with higher tips observed on weekends
+
+# Heatmap
+
+# Correlation between numerical features.
+plt.figure(figsize=(8,5))
+corr = df.corr(numeric_only=True)
+sns.heatmap(corr, annot=True)
+plt.title("Correlation Heatmap")
+plt.show()
+
+- The heatmap shows a strong positive correlation between total bill and tip
+
+# Scatter Plot
+
+
+# Relationship between total bill and tip (colored by smoker).
+# Smoker's differences in tipping behavior.
+plt.figure()
+sns.scatterplot(data=df, x='total_bill', y='tip', hue='smoker')
+plt.title("Total Bill vs Tip (Smoker vs Non-Smoker)")
+plt.xlabel("Total Bill")
+plt.ylabel("Tip")
+plt.show()
+
+- The scatter plot shows a positive relationship between total bill and tip, with slight variation between smokers and non-smokers.
+
+# Histogram
+
+# Distribution of total bill amounts.
+plt.figure()
+sns.histplot(data=df, x='total_bill', bins=20, kde=True, color="green")
+plt.title("Distribution of Total Bill")
+plt.xlabel("Total Bill")
+plt.ylabel("Count")
+plt.show()
+
+- The histogram shows that most total bills fall within a moderate range, with fewer very high values
+
+# Box Plot
+
+# Tip distribution across different days.
+plt.figure()
+sns.boxplot(data=df, x='day', y='tip', palette='Set2')
+plt.title("Tips Distribution by Day")
+plt.xlabel("Day")
+plt.ylabel("Tip")
+plt.show()
+
+- The box plot shows variation in tips across days and highlights the presence of outliers.
+
+# Violin Plot
+
+# total bill distribution across different time (dinner, lunch).
+plt.figure()
+sns.violinplot(data=df, x='time', y='total_bill', palette='Set3')
+plt.title("Total Bill Distribution by Time")
+plt.xlabel("Time")
+plt.ylabel("Total Bill")
+plt.show()
+
+- The violin plot shows that dinner bills tend to be higher and more varied compared to lunch.
+
+# Time Series Chart
+
+# how total_bill varies overtime across the first 50 observations
+df_small = df.iloc[:50]
+
+plt.figure()
+plt.plot(df_small.index, df_small['total_bill'], color="purple")
+plt.title("Time Series of Total Bill (First 50 Records)")
+plt.xlabel("Index")
+plt.ylabel("Total Bill")
+plt.show()
+
+- The time series plot shows fluctuations in total bill amounts across observations without a clear trend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+============ CODE EXPLANATION ===============
+
+```python
+import pandas as pd
+```
+
+* `"import"` : Keyword used to include a library in Python.
+* `"pandas"` : Python library used for data analysis and table handling.
+* `"as"` : Gives alias(short name) to library.
+* `"pd"` : Short name for pandas.
+
+---
+
+```python
+import matplotlib.pyplot as plt
+```
+
+* `"matplotlib"` : Python library for plotting graphs.
+* `"pyplot"` : Module used to create charts and graphs.
+* `"as plt"` : Alias name for pyplot module.
+
+---
+
+```python
+import seaborn as sns
+```
+
+* `"seaborn"` : Advanced visualization library based on matplotlib.
+* `"as sns"` : Alias name for seaborn.
+
+---
+
+```python
+df = pd.read_csv("tips (2).csv")
+```
+
+* `"df"` : Variable storing dataset.
+* `"="` : Assignment operator.
+* `"pd.read_csv()"` : Reads CSV file into DataFrame.
+* `"tips (2).csv"` : Dataset filename.
+
+---
+
+```python
+df
+```
+
+* `"df"` : Displays dataset contents.
+
+---
+
+```python
+df = df.drop_duplicates()
+```
+
+* `"drop_duplicates()"` : Removes duplicate rows from dataset.
+* `"df ="` : Stores cleaned data back into df.
+
+---
+
+```python
+df.shape
+```
+
+* `"shape"` : Returns number of rows and columns in dataset.
+
+---
+
+```python
+df.columns
+```
+
+* `"columns"` : Displays all column names.
+
+---
+
+```python
+df.info()
+```
+
+* `"info()"` : Gives dataset information like:
+
+  * Number of rows
+  * Column names
+  * Data types
+  * Non-null values
+
+---
+
+# Line Chart
+
+## Definition
+
+* **Line Chart** : Graph that connects data points with lines to show trends.
+
+---
+
+```python
+plt.figure()
+```
+
+* `"figure()"` : Creates a new graph figure.
+
+---
+
+```python
+sns.lineplot(data=df, x='size', y='tip')
+```
+
+* `"lineplot()"` : Creates line chart.
+* `"data=df"` : Uses dataset df.
+* `"x='size'"` : Size column on X-axis.
+* `"y='tip'"` : Tip column on Y-axis.
+
+---
+
+```python
+plt.title("Size vs Tip (Line Chart)")
+```
+
+* `"title()"` : Adds title to graph.
+
+---
+
+```python
+plt.xlabel("Size")
+```
+
+* `"xlabel()"` : Labels X-axis.
+
+---
+
+```python
+plt.ylabel("Tip")
+```
+
+* `"ylabel()"` : Labels Y-axis.
+
+---
+
+```python
+plt.show()
+```
+
+* `"show()"` : Displays graph.
+
+---
+
+## Explanation
+
+* The line chart shows that tips generally increase as group size increases.
+
+---
+
+# Bar Plot
+
+## Definition
+
+* **Bar Plot** : Graph that compares values across categories using bars.
+
+---
+
+```python
+plt.figure()
+```
+
+* Creates new figure.
+
+---
+
+```python
+sns.barplot(data=df, x='day', y='total_bill', palette='Set1')
+```
+
+* `"barplot()"` : Creates bar chart.
+* `"data=df"` : Uses dataset.
+* `"x='day'"` : Days on X-axis.
+* `"y='total_bill'"` : Total bill on Y-axis.
+* `"palette='Set1'"` : Sets color theme.
+
+---
+
+```python
+plt.title("Average Total Bill by Day")
+```
+
+* Adds chart title.
+
+---
+
+```python
+plt.xlabel("Day")
+```
+
+* Labels X-axis.
+
+---
+
+```python
+plt.ylabel("Total Bill")
+```
+
+* Labels Y-axis.
+
+---
+
+```python
+plt.show()
+```
+
+* Displays graph.
+
+---
+
+## Explanation
+
+* Bar plot compares average total bill across days.
+* Higher bills are observed on weekends.
+
+---
+
+# Heatmap
+
+## Definition
+
+* **Heatmap** :  Visualization using colors to represent correlation or intensity values.
++1 → Strong positive relation
+-1 → Strong negative relation
+0 → No relation
+
+---
+
+```python
+plt.figure(figsize=(8,5))
+```
+
+* `"figsize=(8,5)"` : Sets width and height of graph.
+
+---
+
+```python
+corr = df.corr(numeric_only=True)
+```
+
+* `"corr()"` : Finds correlation between numerical columns.
+* `"numeric_only=True"` : Uses only numeric columns.
+* `"corr"` : Stores correlation matrix.
+
+---
+
+```python
+sns.heatmap(corr, annot=True)
+```
+
+* `"heatmap()"` : Creates heatmap.
+* `"corr"` : Correlation values used.
+* `"annot=True"` : Displays values inside boxes.
+
+---
+
+```python
+plt.title("Correlation Heatmap")
+```
+
+* Adds title.
+
+---
+
+```python
+plt.show()
+```
+
+* Displays graph.
+
+---
+
+## Explanation
+
+* Heatmap shows strong positive relation between total bill and tip.
+
+---
+
+# Scatter Plot
+
+## Definition
+
+* **Scatter Plot** : Graph showing relationship between two numerical variables using dots.
+
+---
+
+```python
+plt.figure()
+```
+
+* Creates new figure.
+
+---
+
+```python
+sns.scatterplot(data=df, x='total_bill', y='tip', hue='smoker')
+```
+
+* `"scatterplot()"` : Creates scatter graph.
+* `"x='total_bill'"` : Total bill on X-axis.
+* `"y='tip'"` : Tip on Y-axis.
+* `"hue='smoker'"` : Different colors for smokers and non-smokers.
+
+---
+
+```python
+plt.title("Total Bill vs Tip (Smoker vs Non-Smoker)")
+```
+
+* Adds title.
+
+---
+
+```python
+plt.xlabel("Total Bill")
+```
+
+* Labels X-axis.
+
+---
+
+```python
+plt.ylabel("Tip")
+```
+
+* Labels Y-axis.
+
+---
+
+```python
+plt.show()
+```
+
+* Displays graph.
+
+---
+
+## Explanation
+
+* Scatter plot shows that higher total bills generally result in higher tips.
+
+---
+
+# Histogram
+
+## Definition
+
+* **Histogram** : Graph showing frequency distribution of data.
+
+---
+
+```python
+plt.figure()
+```
+
+* Creates new figure.
+
+---
+
+```python
+sns.histplot(data=df, x='total_bill', bins=20, kde=True, color="green")
+```
+
+* `"histplot()"` : Creates histogram.
+* `"x='total_bill'"` : Total bill values on X-axis.
+* `"bins=20"` : Divides data into 20 intervals.
+* `"kde=True"` : Adds smooth density curve.
+* `"color='green'"` : Sets graph color.
+
+---
+
+```python
+plt.title("Distribution of Total Bill")
+```
+
+* Adds title.
+
+---
+
+```python
+plt.xlabel("Total Bill")
+```
+
+* Labels X-axis.
+
+---
+
+```python
+plt.ylabel("Count")
+```
+
+* Labels Y-axis.
+
+---
+
+```python
+plt.show()
+```
+
+* Displays graph.
+
+---
+
+## Explanation
+
+* Histogram shows most bills are moderate, with fewer very high bills.
+
+---
+
+# Box Plot
+
+## Definition
+
+* **Box Plot** : Graph showing spread, median, quartiles, and outliers.
+
+---
+
+```python
+plt.figure()
+```
+
+* Creates figure.
+
+---
+
+```python
+sns.boxplot(data=df, x='day', y='tip', palette='Set2')
+```
+
+* `"boxplot()"` : Creates box plot.
+* `"x='day'"` : Days on X-axis.
+* `"y='tip'"` : Tips on Y-axis.
+* `"palette='Set2'"` : Sets color theme.
+
+---
+
+```python
+plt.title("Tips Distribution by Day")
+```
+
+* Adds title.
+
+---
+
+```python
+plt.xlabel("Day")
+```
+
+* Labels X-axis.
+
+---
+
+```python
+plt.ylabel("Tip")
+```
+
+* Labels Y-axis.
+
+---
+
+```python
+plt.show()
+```
+
+* Displays graph.
+
+---
+
+## Explanation
+
+* Box plot shows variation in tips and identifies outliers.
+
+---
+
+## Important Terms
+
+* **Median** : Middle value of data.
+* **Outlier** : Extremely high or low value.
+
+---
+
+# Violin Plot
+
+## Definition
+
+* **Violin Plot** : Combination of boxplot and density plot showing distribution shape.
+
+---
+
+```python
+plt.figure()
+```
+
+* Creates figure.
+
+---
+
+```python
+sns.violinplot(data=df, x='time', y='total_bill', palette='Set3')
+```
+
+* `"violinplot()"` : Creates violin plot.
+* `"x='time'"` : Meal time on X-axis.
+* `"y='total_bill'"` : Total bill on Y-axis.
+* `"palette='Set3'"` : Color theme.
+
+---
+
+```python
+plt.title("Total Bill Distribution by Time")
+```
+
+* Adds title.
+
+---
+
+```python
+plt.xlabel("Time")
+```
+
+* Labels X-axis.
+
+---
+
+```python
+plt.ylabel("Total Bill")
+```
+
+* Labels Y-axis.
+
+---
+
+```python
+plt.show()
+```
+
+* Displays graph.
+
+---
+
+## Explanation
+
+* Violin plot shows dinner bills are generally higher and more spread out than lunch bills.
+
+---
+
+## Important Term
+
+* **Density** : Concentration or spread of data values.
+
+---
+
+# Time Series Chart
+
+## Definition
+
+* **Time Series Chart** : Graph showing changes in data over time or sequence.
+
+---
+
+```python
+df_small = df.iloc[:50]
+```
+
+* `"iloc[:50]"` : Selects first 50 rows.
+* `"df_small"` : Smaller dataset variable.
+
+---
+
+```python
+plt.figure()
+```
+
+* Creates figure.
+
+---
+
+```python
+plt.plot(df_small.index, df_small['total_bill'], color="purple")
+```
+
+* `"plot()"` : Creates line/time series graph.
+* `"df_small.index"` : Row numbers on X-axis.
+* `"df_small['total_bill']"` : Total bill values on Y-axis.
+* `"color='purple'"` : Sets graph color.
+
+---
+
+```python
+plt.title("Time Series of Total Bill (First 50 Records)")
+```
+
+* Adds title.
+
+---
+
+```python
+plt.xlabel("Index")
+```
+
+* Labels X-axis.
+
+---
+
+```python
+plt.ylabel("Total Bill")
+```
+
+* Labels Y-axis.
+
+---
+
+```python
+plt.show()
+```
+
+* Displays graph.
+
+---
+
+## Explanation
+
+* Time series chart shows fluctuations in total bill values across first 50 records.
+* No fixed increasing or decreasing trend is visible.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+================ VIVAAAAA ================
+## 20 Important Viva Questions and Answers
+
+### Tips Dataset Visualization using Matplotlib & Seaborn
+
+---
+
+### 1. What is Data Visualization?
+
+* Data Visualization is the graphical representation of data using charts and graphs.
+
+---
+
+### 2. What is the purpose of the Tips dataset?
+
+* The Tips dataset is used to analyze restaurant billing and tipping patterns.
+
+---
+
+### 3. What is Pandas?
+
+* `Pandas` is a Python library used for data manipulation and analysis.
+
+---
+
+### 4. What is a DataFrame?
+
+* A DataFrame is a tabular data structure with rows and columns.
+
+---
+
+### 5. Why do we use `read_csv()`?
+
+* `read_csv()` is used to load CSV files into a DataFrame.
+
+---
+
+### 6. What does `drop_duplicates()` do?
+
+* It removes duplicate rows from the dataset.
+
+---
+
+### 7. What is the use of `df.info()`?
+
+* `info()` displays dataset details such as columns, data types, and non-null values.
+
+---
+
+### 8. What is Matplotlib?
+
+* Matplotlib is a Python library used for creating graphs and visualizations.
+
+---
+
+### 9. What is Seaborn?
+
+* Seaborn is a visualization library built on matplotlib for statistical graphics.
+
+---
+
+### 10. What is a Line Chart?
+
+* A line chart shows trends or changes in values using connected lines.
+
+---
+
+### 11. What is a Bar Plot?
+
+* A bar plot compares numerical values across categories using bars.
+
+---
+
+### 12. What is a Heatmap?
+
+* A heatmap represents correlation values using colors.
+
+---
+
+### 13. What is Correlation?
+
+* Correlation measures the relationship between two variables.
+* Its value ranges from `-1` to `+1`.
+
+---
+
+### 14. What is a Scatter Plot?
+
+* A scatter plot shows the relationship between two numerical variables using dots.
+
+---
+
+### 15. What is a Histogram?
+
+* A histogram shows the frequency distribution of data.
+
+---
+
+### 16. What is KDE in Histogram?
+
+* KDE (Kernel Density Estimation) is a smooth curve showing data distribution.
+
+---
+
+### 17. What is a Box Plot?
+
+* A box plot shows median, quartiles, spread, and outliers in data.
+
+---
+
+### 18. What is an Outlier?
+
+* An outlier is a value significantly higher or lower than other values.
+
+---
+
+### 19. What is a Violin Plot?
+
+* A violin plot shows both distribution and density of data.
+
+---
+
+### 20. What is the purpose of a Time Series Chart?
+
+* A time series chart shows how data changes over time or sequence/order.
+

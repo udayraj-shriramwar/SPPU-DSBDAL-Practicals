@@ -1,0 +1,987 @@
+# 8. Visualize the data using Python libraries matplotlib, seaborn by plotting the graphs for airquality dataset.(Use Air_quality_forvisualization.csv)( Charts : Line chart, Barplot, Heatmap, Scatterplot, histogram, boxplot, violin, timeseries chart)
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df = pd.read_csv("AQ_data.csv")   # or your file name
+df.head()
+
+df.shape
+
+df.columns
+
+# Line Chart
+
+# Lineplot for first 30 records
+plt.figure()
+sns.lineplot(x=df.index[:30], y=df['so2'][:30], color='steelblue')
+plt.title("SO2 Levels (First 30 Records)")
+plt.xlabel("Index")
+plt.ylabel("SO2")
+plt.show()
+
+- The line chart shows fluctuations in SO₂ levels across the first 30 observations, indicating varying air pollution levels.
+
+# Bar Plot
+
+#Average SO₂ by State
+plt.figure()
+sns.barplot(data=df, x='state', y='so2')
+plt.xticks(rotation=90)
+plt.title("Average SO2 by State")
+plt.xlabel("State")
+plt.ylabel("SO2")
+plt.show()
+
+- The bar plot compares average SO₂ levels across different states, showing that pollution levels vary from state to state
+
+
+# Heatmap
+
+# Correlation between numerical features.
+plt.figure(figsize=(8,5))
+corr = df.corr(numeric_only=True)
+sns.heatmap(corr, annot=True)
+plt.title("Correlation Heatmap")
+plt.show()
+
+
+- The heatmap shows correlations between pollutants, where RSPM and SPM have a strong positive relationship(0.8)
+
+
+# Scatter Plot
+
+# Relationship between NO2 vs PM2.5 (colored by type)
+plt.figure()
+sns.scatterplot(data=df, x='no2', y='pm2_5', hue='type')
+plt.title("NO2 vs PM2.5")
+plt.xlabel("NO2")
+plt.ylabel("PM2.5")
+plt.legend(title="Area type", bbox_to_anchor=(1, 1), loc='upper left')
+plt.show()
+
+- The scatter plot shows a positive relationship between NO₂ and PM2.5 concentrations across different area types
+
+
+# Histogram
+
+# Distribution of PM2.5
+plt.figure(figsize=(8,6))
+sns.histplot(df['pm2_5'], bins=30, kde=True, color="green")
+plt.title("Histogram: PM2.5 Distribution")
+plt.show()
+
+- The histogram indicates that most PM2.5 values are concentrated in the lower range, with few extremely high values.
+
+
+# Boxplot
+
+plt.figure(figsize=(10,6))
+sns.boxplot(x="type", y="no2", data=df)
+plt.xticks(rotation=90)
+plt.title("Box Plot: NO₂ Levels by Area Type")
+plt.xlabel("Area Type")
+plt.ylabel("NO₂ Concentration")
+plt.show()
+
+- The box plot shows the distribution of NO₂ levels across area types and highlights the presence of several outliers
+
+
+# Violin Plot
+
+plt.figure(figsize=(10,6))
+sns.violinplot(x="type", y="no2", hue="type", data=df, inner="box", palette="muted", legend=False)
+plt.xticks(rotation=90)
+plt.title("Violin Plot: NO₂ Distribution by Area Type")
+plt.xlabel("Area Type")
+plt.ylabel("NO₂ Concentration")
+plt.show()
+
+- The violin plot displays the density and spread of NO₂ concentrations for different area types.
+
+
+# Time Series Chart
+
+df_small = df.iloc[:100]
+
+plt.figure()
+plt.plot(df_small.index, df_small['no2'], color='steelblue')
+plt.title("NO2 Time Series (First 100 Records)")
+plt.xlabel("Index")
+plt.ylabel("NO2")
+plt.show()
+
+- The time series chart shows fluctuations in NO₂ levels over the first 100 observations without a consistent trend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# EXPLANATION
+
+```python id="wqpjyt"
+import pandas as pd
+```
+
+* `"import"` : Keyword used to include a library in Python.
+* `"pandas"` : Python library used for data analysis and manipulation.
+* `"as"` : Used to give short alias name.
+* `"pd"` : Alias(short name) for pandas.
+
+---
+
+```python id="zkps9h"
+import matplotlib.pyplot as plt
+```
+
+* `"matplotlib"` : Python library used for plotting graphs.
+* `"pyplot"` : Module used for creating charts and graphs.
+* `"as plt"` : Alias name for pyplot.
+
+---
+
+```python id="e6lsqz"
+import seaborn as sns
+```
+
+* `"seaborn"` : Python library for advanced statistical visualization.
+* `"as sns"` : Alias(short name) for seaborn.
+
+---
+
+```python id="gx9z8m"
+df = pd.read_csv("AQ_data.csv")
+```
+
+* `"df"` : Variable storing dataset.
+* `"="` : Assignment operator.
+* `"pd.read_csv()"` : Reads CSV file into DataFrame.
+* `"AQ_data.csv"` : Air Quality dataset filename.
+
+---
+
+```python id="14wms0"
+df.head()
+```
+
+* `"head()"` : Displays first 5 rows of dataset.
+
+---
+
+```python id="d85oyp"
+df.shape
+```
+
+* `"shape"` : Returns number of rows and columns.
+
+---
+
+```python id="f0x7x4"
+df.columns
+```
+
+* `"columns"` : Displays all column names.
+
+---
+
+# Line Chart
+
+## Definition
+
+* **Line Chart** : Graph that connects data points using lines to show trends over sequence or time.
+
+---
+
+```python id="2bywq7"
+plt.figure()
+```
+
+* `"figure()"` : Creates new graph figure.
+
+---
+
+```python id="9a4a6u"
+sns.lineplot(x=df.index[:30], y=df['so2'][:30], color='steelblue')
+```
+
+* `"lineplot()"` : Creates line chart.
+* `"x=df.index[:30]"` : Uses first 30 row indexes on X-axis.
+* `"y=df['so2'][:30]"` : Uses first 30 SO₂ values on Y-axis.
+* `"color='steelblue'"` : Sets graph color.
+
+---
+
+```python id="9xx4v0"
+plt.title("SO2 Levels (First 30 Records)")
+```
+
+* `"title()"` : Adds chart title.
+
+---
+
+```python id="8lg80v"
+plt.xlabel("Index")
+```
+
+* `"xlabel()"` : Labels X-axis.
+
+---
+
+```python id="jlwmpp"
+plt.ylabel("SO2")
+```
+
+* `"ylabel()"` : Labels Y-axis.
+
+---
+
+```python id="k0uppl"
+plt.show()
+```
+
+* `"show()"` : Displays graph.
+
+---
+
+## Explanation
+
+* The line chart shows fluctuations in SO₂ levels for first 30 observations.
+* Pollution levels vary across records.
+
+---
+
+# Bar Plot
+
+## Definition
+
+* **Bar Plot** : Graph used to compare values among categories using bars.
+
+---
+
+```python id="rvpr4g"
+plt.figure()
+```
+
+* Creates figure.
+
+---
+
+```python id="6q3h75"
+sns.barplot(data=df, x='state', y='so2')
+```
+
+* `"barplot()"` : Creates bar graph.
+* `"data=df"` : Uses dataset df.
+* `"x='state'"` : States on X-axis.
+* `"y='so2'"` : SO₂ values on Y-axis.
+
+---
+
+```python id="tncwjz"
+plt.xticks(rotation=90)
+```
+
+* `"xticks()"` : Modifies X-axis labels.
+* `"rotation=90"` : Rotates labels vertically for readability.
+
+---
+
+```python id="6g3f7g"
+plt.title("Average SO2 by State")
+```
+
+* Adds graph title.
+
+---
+
+```python id="fsc1cc"
+plt.xlabel("State")
+```
+
+* Labels X-axis.
+
+---
+
+```python id="4n6ppk"
+plt.ylabel("SO2")
+```
+
+* Labels Y-axis.
+
+---
+
+```python id="4wsxjr"
+plt.show()
+```
+
+* Displays graph.
+
+---
+
+## Explanation
+
+* Bar plot compares average SO₂ levels across states.
+* Pollution levels differ from state to state.
+
+---
+
+# Heatmap
+
+## Definition
+
+* **Heatmap** : Visualization using colors to represent correlation or intensity values.
+
+---
+
+```python id="lns1y6"
+plt.figure(figsize=(8,5))
+```
+
+* `"figsize=(8,5)"` : Sets graph size.
+
+---
+
+```python id="9u5j0f"
+corr = df.corr(numeric_only=True)
+```
+
+* `"corr()"` : Finds correlation between numerical columns.
+* `"numeric_only=True"` : Uses only numeric columns.
+* `"corr"` : Variable storing correlation matrix.
+
+---
+
+```python id="kr1cg0"
+sns.heatmap(corr, annot=True)
+```
+
+* `"heatmap()"` : Creates heatmap.
+* `"corr"` : Correlation data used.
+* `"annot=True"` : Displays correlation values inside boxes.
+
+---
+
+```python id="f9t9xy"
+plt.title("Correlation Heatmap")
+```
+
+* Adds title.
+
+---
+
+```python id="pn56tx"
+plt.show()
+```
+
+* Displays graph.
+
+---
+
+## Explanation
+
+* Heatmap shows relationships between pollutants.
+* RSPM and SPM show strong positive correlation (0.8).
++1 → Strong positive relation
+-1 → Strong negative relation
+0 → No relation
+
+---
+
+# Scatter Plot
+
+## Definition
+
+* **Scatter Plot** : Graph showing relationship between two numerical variables using dots.
+
+---
+
+```python id="m10y4p"
+plt.figure()
+```
+
+* Creates figure.
+
+---
+
+```python id="5t85ua"
+sns.scatterplot(data=df, x='no2', y='pm2_5', hue='type')
+```
+
+* `"scatterplot()"` : Creates scatter graph.
+* `"x='no2'"` : NO₂ values on X-axis.
+* `"y='pm2_5'"` : PM2.5 values on Y-axis.
+* `"hue='type'"` : Different colors for area types.
+
+---
+
+```python id="h1pr7s"
+plt.title("NO2 vs PM2.5")
+```
+
+* Adds title.
+
+---
+
+```python id="u4nhjx"
+plt.xlabel("NO2")
+```
+
+* Labels X-axis.
+
+---
+
+```python id="12vvpg"
+plt.ylabel("PM2.5")
+```
+
+* Labels Y-axis.
+
+---
+
+```python id="67glkg"
+plt.legend(title="Area type", bbox_to_anchor=(1, 1), loc='upper left')
+```
+
+* `"legend()"` : Displays category labels.
+* `"title='Area type'"` : Legend title.
+* `"bbox_to_anchor=(1,1)"` : Places legend outside graph.
+* `"loc='upper left'"` : Legend position.
+
+---
+
+```python id="yjlwm7"
+plt.show()
+```
+
+* Displays graph.
+
+---
+
+## Explanation
+
+* Scatter plot shows positive relationship between NO₂ and PM2.5 levels.
+* Different colors represent different area types.
+
+---
+
+# Histogram
+
+## Definition
+
+* **Histogram** : Graph showing frequency distribution of numerical data.
+
+---
+
+```python id="e0y9nd"
+plt.figure(figsize=(8,6))
+```
+
+* Creates graph with custom size.
+
+---
+
+```python id="u7oqxg"
+sns.histplot(df['pm2_5'], bins=30, kde=True, color="green")
+```
+
+* `"histplot()"` : Creates histogram.
+* `"df['pm2_5']"` : PM2.5 values.
+* `"bins=30"` : Divides data into 30 intervals.
+* `"kde=True"` : Adds smooth density curve.
+* `"color='green'"` : Sets graph color.
+
+---
+
+```python id="m4x1vi"
+plt.title("Histogram: PM2.5 Distribution")
+```
+
+* Adds title.
+
+---
+
+```python id="ep2j4j"
+plt.show()
+```
+
+* Displays graph.
+
+---
+
+## Explanation
+
+* Histogram shows most PM2.5 values are in lower range.
+* Very high pollution values are fewer.
+
+---
+
+## Important Terms
+
+* **Frequency** : Number of occurrences.
+* **KDE** : Kernel Density Estimation, smooth curve representing distribution.
+
+---
+
+# Boxplot
+
+## Definition
+
+* **Boxplot** : Graph showing spread, quartiles, median, and outliers.
+
+---
+
+```python id="h8n5pp"
+plt.figure(figsize=(10,6))
+```
+
+* Creates graph with figure size.
+
+---
+
+```python id="qzmsu6"
+sns.boxplot(x="type", y="no2", data=df)
+```
+
+* `"boxplot()"` : Creates boxplot.
+* `"x='type'"` : Area type on X-axis.
+* `"y='no2'"` : NO₂ concentration on Y-axis.
+* `"data=df"` : Uses dataset.
+
+---
+
+```python id="j1kppd"
+plt.xticks(rotation=90)
+```
+
+* Rotates X-axis labels vertically.
+
+---
+
+```python id="0b9vlf"
+plt.title("Box Plot: NO₂ Levels by Area Type")
+```
+
+* Adds title.
+
+---
+
+```python id="bhm27k"
+plt.xlabel("Area Type")
+```
+
+* Labels X-axis.
+
+---
+
+```python id="jlwmqy"
+plt.ylabel("NO₂ Concentration")
+```
+
+* Labels Y-axis.
+
+---
+
+```python id="a34vn5"
+plt.show()
+```
+
+* Displays graph.
+
+---
+
+## Explanation
+
+* Boxplot shows NO₂ distribution for different area types.
+* Outliers are visible.
+
+---
+
+## Important Terms
+
+* **Median** : Middle value of dataset.
+* **Quartiles** : Divide data into four equal parts.
+* **Outlier** : Value significantly different from others.
+
+---
+
+# Violin Plot
+
+## Definition
+
+* **Violin Plot** : Combination of boxplot and density plot showing data distribution shape.
+
+---
+
+```python id="jlwmw5"
+plt.figure(figsize=(10,6))
+```
+
+* Creates graph figure.
+
+---
+
+```python id="axmte5"
+sns.violinplot(x="type", y="no2", hue="type", data=df, inner="box", palette="muted", legend=False)
+```
+
+* `"violinplot()"` : Creates violin plot.
+* `"x='type'"` : Area type on X-axis.
+* `"y='no2'"` : NO₂ values on Y-axis.
+* `"hue='type'"` : Different colors for area type.
+* `"inner='box'"` : Displays boxplot inside violin plot.
+* `"palette='muted'"` : Uses muted color theme.
+* `"legend=False"` : Hides legend.
+
+---
+
+```python id="h9tr5w"
+plt.xticks(rotation=90)
+```
+
+* Rotates labels vertically.
+
+---
+
+```python id="jlwmzg"
+plt.title("Violin Plot: NO₂ Distribution by Area Type")
+```
+
+* Adds title.
+
+---
+
+```python id="6bjlwm"
+plt.xlabel("Area Type")
+```
+
+* Labels X-axis.
+
+---
+
+```python id="3y5z9w"
+plt.ylabel("NO₂ Concentration")
+```
+
+* Labels Y-axis.
+
+---
+
+```python id="jlwmz1"
+plt.show()
+```
+
+* Displays graph.
+
+---
+
+## Explanation
+
+* Violin plot shows density and spread of NO₂ levels for area types.
+
+---
+
+## Important Term
+
+* **Density** : Concentration or spread of data values.
+
+---
+
+# Time Series Chart
+
+## Definition
+
+* **Time Series Chart** : Graph showing variation of data over sequence or time.
+
+---
+
+```python id="jlwmz7"
+df_small = df.iloc[:100]
+```
+
+* `"iloc[:100]"` : Selects first 100 rows.
+* `"df_small"` : Smaller dataset variable.
+
+---
+
+```python id="jlwmzb"
+plt.figure()
+```
+
+* Creates figure.
+
+---
+
+```python id="jlwmze"
+plt.plot(df_small.index, df_small['no2'], color='steelblue')
+```
+
+* `"plot()"` : Creates line/time series graph.
+* `"df_small.index"` : Row numbers on X-axis.
+* `"df_small['no2']"` : NO₂ values on Y-axis.
+* `"color='steelblue'"` : Sets line color.
+
+---
+
+```python id="jlwmzh"
+plt.title("NO2 Time Series (First 100 Records)")
+```
+
+* Adds title.
+
+---
+
+```python id="jlwmzk"
+plt.xlabel("Index")
+```
+
+* Labels X-axis.
+
+---
+
+```python id="jlwmzn"
+plt.ylabel("NO2")
+```
+
+* Labels Y-axis.
+
+---
+
+```python id="jlwmzq"
+plt.show()
+```
+
+* Displays graph.
+
+---
+
+## Explanation
+
+* Time series chart shows fluctuations in NO₂ levels across first 100 observations.
+* No consistent increasing or decreasing trend is visible.
+
+
+
+
+
+
+| Column Name                   | Full Form                               | Meaning                                                                                                |
+| ----------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `stn_code`                    | Station Code                            | Unique ID given to an air quality monitoring station.                                                  |
+| `sampling_date`               | Sampling Date                           | Date on which the air sample was collected.                                                            |
+| `state`                       | State                                   | Name of the Indian state where monitoring was done.                                                    |
+| `location`                    | Location                                | City or area where the monitoring station is situated.                                                 |
+| `agency`                      | Monitoring Agency                       | Organization responsible for collecting air quality data.                                              |
+| `type`                        | Area Type                               | Type of area such as Residential, Industrial, or Sensitive area.                                       |
+| `so2`                         | Sulphur Dioxide                         | Amount of SO₂ gas in air. It is a harmful pollutant mainly released from industries and burning fuels. |
+| `no2`                         | Nitrogen Dioxide                        | Amount of NO₂ gas in air. Mainly produced by vehicles and industrial emissions.                        |
+| `rspm`                        | Respirable Suspended Particulate Matter | Fine dust particles (PM10) that can enter the lungs and affect breathing.                              |
+| `spm`                         | Suspended Particulate Matter            | Total suspended dust particles present in air.                                                         |
+| `location_monitoring_station` | Location of Monitoring Station          | Exact place/name of the station where pollution was measured.                                          |
+| `pm2_5`                       | Particulate Matter 2.5                  | Very tiny particles (diameter ≤ 2.5 micrometers) harmful to lungs and heart.                           |
+| `date`                        | Date                                    | General date column stored in date format for analysis.                                                |
+
+### Important Pollutants
+
+* **SO₂** → Causes breathing problems and acid rain.
+* **NO₂** → Causes lung irritation and smog.
+* **RSPM / PM10** → Dust particles harmful to respiratory system.
+* **PM2.5** → Most dangerous because particles are extremely small and enter deep into lungs.
+
+### Simple Difference
+
+* **SPM** → All suspended particles in air.
+* **RSPM (PM10)** → Smaller breathable particles.
+* **PM2.5** → Ultra-fine particles, more harmful than PM10.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# VIVA 
+
+
+---
+
+### 1. What is Data Visualization?
+
+* Data Visualization is the graphical representation of data using charts and graphs.
+
+---
+
+### 2. What is the Air Quality dataset used for?
+
+* It is used to analyze pollution levels and air quality parameters like SO₂, NO₂, PM2.5, etc.
+
+---
+
+### 3. What is Pandas?
+
+* `Pandas` is a Python library used for data manipulation and analysis.
+
+---
+
+### 4. What is a DataFrame?
+
+* A DataFrame is a table-like data structure with rows and columns.
+
+---
+
+### 5. Why is `read_csv()` used?
+
+* `read_csv()` is used to load CSV files into a DataFrame.
+
+---
+
+### 6. What does `df.head()` do?
+
+* `head()` displays the first 5 rows of the dataset.
+
+---
+
+### 7. What is the use of `df.shape`?
+
+* `shape` returns the number of rows and columns in the dataset.
+
+---
+
+### 8. What is Matplotlib?
+
+* Matplotlib is a Python library used for creating charts and graphs.
+
+---
+
+### 9. What is Seaborn?
+
+* Seaborn is a Python library used for advanced statistical visualization.
+
+---
+
+### 10. What is a Line Chart?
+
+* A line chart shows trends or changes in data using connected lines.
+
+---
+
+### 11. What is a Bar Plot?
+
+* A bar plot compares values between different categories using bars.
+
+---
+
+### 12. What is a Heatmap?
+
+* A heatmap represents correlation values using different colors.
+
+---
+
+### 13. What is Correlation?
+
+* Correlation measures the relationship between variables.
+* Its value ranges from `-1` to `+1`.
+
+---
+
+### 14. What is a Scatter Plot?
+
+* A scatter plot shows the relationship between two numerical variables using dots.
+
+---
+
+### 15. What is PM2.5?
+
+* PM2.5 refers to fine particulate matter with diameter less than 2.5 micrometers.
+
+---
+
+### 16. What is a Histogram?
+
+* A histogram shows frequency distribution of numerical data.
+
+---
+
+### 17. What is KDE in Histogram?
+
+* KDE (Kernel Density Estimation) is a smooth curve showing data distribution.
+
+---
+
+### 18. What is a Box Plot?
+
+* A box plot shows median, quartiles, spread, and outliers in data.
+
+---
+
+### 19. What is a Violin Plot?
+
+* A violin plot shows both distribution and density of data.
+
+---
+
+### 20. What is the purpose of a Time Series Chart?
+
+* A time series chart shows how data changes over time or sequence/order.
+

@@ -1,0 +1,504 @@
+# 4. Perform the following operations using Python on the Heart Diseases data set
+- a. Data cleaning
+- b. Data integration
+- c. Data transformation
+- d. Error correcting
+- e. Data model building
+
+
+import pandas as pd
+import numpy as np
+
+df = pd.read_csv("heart.csv")   
+df
+
+# a. Data Cleaning
+
+df.info()
+
+# Check missing values
+df.isnull().sum()
+
+# Remove duplicates
+df.drop_duplicates(inplace=True)
+
+# Count ,min,max ,etc of each column
+df.describe()
+
+# b. Data Integration
+
+# Create subset 1
+sub1 = df[['age', 'sex', 'cp']]
+sub1.head()
+
+# Create subset 2
+sub2 = df[['chol', 'trtbps', 'thalachh']]
+sub2.head()
+
+# Merge using index
+df_integrated = pd.merge(sub1, sub2, left_index=True, right_index=True)
+df_integrated.head()
+
+# c. Data Transformation
+
+# Feature Scaling - Normalize numeric columns
+from sklearn.preprocessing import MinMaxScaler
+
+scaler = MinMaxScaler() # Scaling range is 0 to 1
+numeric_cols = ['age','trtbps','chol','thalachh','oldpeak']
+
+df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
+df[numeric_cols]
+
+# d. Error Correction
+
+# Example: remove negative pollutant values
+for col in numeric_cols:
+    df[col] = df[col].apply(lambda x: x if x >= 0 else np.nan)
+
+# fill NaN again after this
+df[numeric_cols] = df[numeric_cols].ffill().bfill()
+
+
+# Shape of df before removing outliers
+df.shape
+
+# Remove outliers using IQR
+Q1 = df[numeric_cols].quantile(0.25)
+Q3 = df[numeric_cols].quantile(0.75)
+IQR = Q3 - Q1
+
+df = df[~((df[numeric_cols] < (Q1 - 1.5 * IQR)) | 
+          (df[numeric_cols] > (Q3 + 1.5 * IQR))).any(axis=1)]
+
+# Shape of df after removing outliers
+df.shape
+
+# Another method to check outlier - should return all columns 0
+outliers_check = ((df[numeric_cols] < (Q1 - 1.5 * IQR)) | 
+                  (df[numeric_cols] > (Q3 + 1.5 * IQR))).sum()
+
+print(outliers_check)
+
+
+# e. Model Building
+
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report
+
+# Features & target
+X = df.drop(columns=['output'])
+y = df['output']
+
+# Split data
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Model
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, y_train)
+
+# Prediction
+y_pred = model.predict(X_test)
+
+print("Accuracy:", accuracy_score(y_test, y_pred))
+
+# Classification Report (Optional)
+print("\nClassification Report:\n")
+print(classification_report(y_test, y_pred))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---: CODE EXPLANATION :---
+
+1) Import Libraries
+    import pandas as pd   : pandas is used for handling tables and datasets.
+    import numpy as np   : numpy is used for numerical operations.
+
+
+2) Load Dataset
+    df = pd.read_csv("heart.csv")
+    df
+---:Explanation:---
+pd.read_csv() reads the CSV file.
+Dataset is stored in variable df.
+df displays the complete dataset.
+
+3) Display Dataset Information
+    df.info()
+---:Explanation:---
+Shows:
+Number of rows and columns
+Column names
+Data types
+Missing values
+
+4) Check Missing Values
+df.isnull().sum()
+---:Explanation:---
+isnull() checks missing values.
+sum() counts missing values in each column.
+
+df.drop_duplicates(inplace=True)
+Removes duplicate rows from the DataFrame.
+--------Explanation--------
+drop_duplicates() → removes repeated data
+inplace=True → directly updates the original DataFrame
+
+df.describe()
+Shows statistical summary of the DataFrame.
+
+b. data integration 
+
+5) Create Subset 1
+sub1 = df[['age', 'sex', 'cp']]
+sub1.head()
+---:Explanation:---
+Creates smaller dataset containing:
+age
+sex
+chest pain (cp)
+head() shows first 5 rows.
+
+sub2 = df[['chol', 'trtbps', 'thalachh']]
+Creates a smaller dataset containing:
+chol → cholesterol level
+trtbps → resting blood pressure
+thalachh → maximum heart rate achieved
+
+6) Merge Datasets
+df_integrated = pd.merge(sub1, sub2, left_index=True, right_index=True)
+df_integrated.head()
+---:Explanation:---
+Combines both subsets into one dataset.
+Merge is done using row indexes.
+pd.merge() → combines datasets
+left_index=True → uses index of sub1
+right_index=True → uses index of sub2
+
+c. Data Transformation
+
+7) Import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler
+---:Explanation:---
+Imports the MinMaxScaler class from scikit-learn preprocessing module.
+It is used for data normalization/scaling.
+
+8) Create Scaler Object
+scaler = MinMaxScaler()
+---:Explanation:---
+Creates normalization object of MinMaxScaler for scaling numerical data between 0 and 1.
+
+9) Normalize Data
+df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
+---:Explanation:---
+fit_transform() learns and transforms data.
+All values become scaled between 0 and 1.
+fit() → learns minimum and maximum values
+transform() → converts values between 0 and 1
+fit_transform() → performs both steps together
+
+
+d. Error Correction
+
+10) Error Correction
+for col in numeric_cols:
+    df[col] = df[col].apply(lambda x: x if x >= 0 else np.nan)
+---:Explanation:---
+for col in numeric_cols : Loops through numeric columns.
+apply() : Applies a function to every value in the column.
+lambda x : Creates a small anonymous function.
+x if x >= 0 else np.nan
+Condition:
+if value is non-negative → keep it
+otherwise → replace with NaN
+
+11) Fill Missing Values
+df[numeric_cols] = df[numeric_cols].ffill().bfill()
+---:Explanation:---
+ffill() → fills using previous value.
+bfill() → fills using next value.
+
+df.shape : Returns the size of the DataFrame in:
+                  (rows, columns)
+
+12) Calculate Quartiles
+Q1 = df[numeric_cols].quantile(0.25)
+Q3 = df[numeric_cols].quantile(0.75)
+IQR = Q3 - Q1
+---:Explanation:---
+Q1 → 25th percentile
+Q3 → 75th percentile
+IQR → Interquartile Range, IQR measures the spread of the middle 50% of the data.
+
+13)Remove Outliers
+df = df[~((df[numeric_cols] < (Q1 - 1.5 * IQR)) | 
+          (df[numeric_cols] > (Q3 + 1.5 * IQR))).any(axis=1)]
+---:Explanation:---
+Detects abnormal values using IQR method.
+Removes rows containing outliers.
+1. Lower Limit : Q1 - 1.5 * IQR : Calculates minimum allowed value.    (Values below this are considered outliers.)
+2. Upper Limit : Q3 + 1.5 * IQR : Calculates maximum allowed value.   (Values above this are considered outliers.)
+
+4. Detect Upper Outliers : df[numeric_cols] > (Q3 + 1.5 * IQR)
+Checks if any value is greater than upper limit.
+5. Combine Conditions
+| : Logical OR operator.
+Checks: lower outlier OR upper outlier
+6. Check Entire Row : .any(axis=1)
+Checks each row:
+if any column contains an outlier → True
+axis=1 means row-wise checking.
+7. Negation Operator
+~ : Reverses True/False values.
+So:
+outlier rows → removed
+normal rows → kept
+8. Final Filtering
+df[ ... ] : Keeps only rows without outliers.
+Simple Meaning
+The code:
+detects abnormal values
+removes rows containing outliers
+keeps only clean data
+
+e. Model Building
+
+"from sklearn.model_selection import train_test_split"
+Imports train_test_split from scikit-learn.
+It is used to divide the dataset into: training data, testing data
+
+"from sklearn.linear_model import LogisticRegression"
+Imports the Logistic Regression algorithm.
+It is used for: classification problems, predicting categories like Yes/No, 0/1
+
+"from sklearn.metrics import accuracy_score, classification_report"
+Imports evaluation metrics used to measure model performance.
+accuracy_score : Calculates prediction accuracy.
+Formula: Accuracy= Total Predictions / Correct Predictions
+classification_report
+Displays: precision, recall, F1-score, support
+for model evaluation.
+
+14)Define Features and Target
+X = df.drop(columns=['output'])
+y = df['output']
+---:Explanation:---
+Creates the feature dataset X by removing the target column output.
+X → input features
+y → target/output column
+
+15)Split Dataset
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+----:Explanation:----
+test_size=0.2 : Keeps: 20% data for testing
+                                80% data for training
+random_state=42
+Fixes random splitting so the same split is generated every time the code runs.
+s
+#model
+"model = LogisticRegression(max_iter=1000)"
+Creates a Logistic Regression model.
+max_iter=1000 : Sets the maximum number of iterations for model training.
+It helps the model converge properly if default iterations are insufficient.
+model.fit(X_train, y_train) : Trains the model using training data.
+
+
+16)Predict Output
+y_pred = model.predict(X_test)
+----:Explanation:-----
+Predicts heart disease results for test data
+
+17)Calculate Accuracy
+print("Accuracy:", accuracy_score(y_test, y_pred))
+----:Explanation:----
+Compares actual and predicted values.
+
+Accuracy Formula: Accuracy=Total Predictions / Correct Predictions
+	​
+18)Classification Report
+print("\nClassification Report:\n")
+print(classification_report(y_test, y_pred))
+----:Explanation:----
+
+Displays:
+
+Precision
+Recall
+F1-score
+Support
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+========= VIVAA =========
+
+1) What is Data Preprocessing?
+
+Data preprocessing is the process of cleaning and preparing raw data before analysis.
+
+2) Why is preprocessing important?
+
+It improves data quality and increases model accuracy.
+
+3) What is data cleaning?
+
+Removing missing, duplicate, and incorrect data.
+
+4) How do you check missing values?
+df.isnull().sum()
+
+5) How do you remove duplicate rows?
+df.drop_duplicates()
+
+6) What is data integration?
+Combining data from multiple datasets into one dataset.
+
+7) Which function is used to merge datasets?
+pd.merge()
+
+8) What is data transformation?
+Converting data into suitable format for analysis.
+
+9) What is normalization?
+Scaling data into a fixed range like 0 to 1.
+
+10) Which scaler is used in your practical?
+MinMaxScaler
+
+12) Why is normalization required?
+To bring all features into the same scale.
+
+13) What is error correction?
+Detecting and correcting invalid data values.
+
+14) What is an outlier?
+A value that is far different from normal values.
+
+15) Which method is used for outlier detection?
+
+IQR Method.
+
+16) Formula of IQR
+
+IQR=Q3−Q1
+	​
+17) Why are outliers removed?
+
+Because they reduce model performance and accuracy.
+
+18) Which machine learning algorithm is used?
+
+Logistic Regression.
+
+19) Why is Logistic Regression used?
+
+Because the output is binary (0 or 1).
+
+20) What is supervised learning?
+
+Learning using labeled data.
+
+21) What is classification?
+
+Predicting categories or classes.
+
+22) What is train-test split?
+
+Dividing dataset into training and testing data.
+
+23) Which function is used for train-test split?
+train_test_split()
+
+24) What is accuracy?
+
+Accuracy=
+Total Predictions/
+Correct Predictions
+	​
+25) What is the target column in Heart Disease dataset?
+
+output
+
+1 → Heart disease present
+0 → No heart disease

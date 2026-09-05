@@ -1,0 +1,487 @@
+Perform the following data visualization operations using Tableau on (Adult Dataset/Iris Dataset)
+a. 1D (Linear) Data visualization
+b. 2D (Planar) Data Visualization
+c. 3D (Volumetric) Data Visualization
+d. Multidimensional Data Visualization
+e. Tree/ Hierarchical Data visualization
+f. Network Data visualization
+
+
+# Import file
+Select Microsoft Excel / Text file > import two adult dataset 
+Drag 1st adult dataset on Drag-Sheet > Drag 2nd adult dataset on Drag-Sheet > Make relationship 
+
+
+# a. 1D
+Title : 1D - Count of Number of Male & Female
+
+Visualization Details :
+Rows: gender > right click > measures > count
+Color: gender (Male and Female)
+
+Insight : Male records are significantly higher than female records in the dataset.
+
+# b. 2D
+Title : 2D - Income Based on Race
+
+Visualization Details :
+Rows: income > right click > measures > count
+Columns : Race
+
+Insight : The White racial group has the highest income count compared to all other races.
+
+# c. 3D
+Title : 3D - Occupation wise income of male & female
+
+Visualization Details :
+Rows: income > right click > measures > count
+Columns : Occupation , Gender
+Color: gender (Male and Female)
+Filters : Marital-Status > right click > Show Filter
+
+Insight : Male income counts dominate across most occupations, especially in Craft-repair and Exec-managerial roles.
+
+# d. Multidimensional
+Title : Multidimensional - Income Distribution by Workclass, Gender, and Race
+
+Visualization Details :
+Rows: income > right click > measures > count
+Columns : Workclass, Gender, Race
+
+Insight : Private workclass employees contribute the highest income counts, particularly among the “White” race category.
+
+# e. Tree
+Title : Tree-Map - Income Generated Based on Occupation 
+
+Visualization Details :
+Rows: income > right click > measures > count
+Columns : Occupation
+"Go to > Show me > Select Tree-Map (Visualization generate automatically)"
+
+Insight : Prof-specialty occupations generate the largest share of income in the treemap.
+
+# f. Network
+Title : Network-Data
+
+Visualization Details :
+Rows: Line Y , Circle Y
+Columns : Line X
+
+"Right click > Select Dimension (For all 3)"
+
+" In Marks > Line Y > Select line > Drag Measure Name in color > Drag Relationship1 in detail"
+
+" In Marks > Circle Y > Select Circle > Drag Node in color & label > Drag Relationship1 in detail > Increase size"
+
+"Right click Circle Y (present in column) > Select Dual Axis"
+--- if needed Increase size of Circle Y (present in marks) ---
+
+Insight : The network graph shows Craft-repair acting as a central connection node between other occupations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# EXPLANATION
+
+Relationship Between Two Datasets
+Two Adult datasets are connected using a relationship.
+
+What is a Relationship in Tableau?
+A relationship connects tables logically without permanently merging them.
+It allows Tableau to:
+combine related data dynamically
+maintain performance
+avoid duplication
+
+a. 1D (Linear) Data Visualization
+
+Title 1D - Count of Number of Male & Female
+
+What is 1D Visualization?
+1D visualization uses only one attribute.
+Here:
+only Gender is analyzed.
+The chart displays the count of: Male, Female
+
+Concept: The count is calculated as:
+Count=∑1
+Tableau counts the number of records for each gender category.
+
+Visualization Meaning
+       Male and Female categories are represented separately.
+       Different colors distinguish gender groups.
+This helps compare population distribution quickly.
+
+Insight: Male records are significantly higher than female records in the dataset.
+
+Viva Questions
+Q1. Why is this called 1D visualization?
+Because only one attribute (Gender) is analyzed.
+
+Q2. What does COUNT measure do?
+It counts the number of records.
+
+
+b. 2D (Planar) Data Visualization
+
+Title: 2D - Income Based on Race
+What is 2D Visualization?
+2D visualization compares two variables using horizontal and vertical axes.
+Here: Race, Income count
+are compared together.
+
+Visualization Meaning
+The chart shows:
+      income distribution among racial groups.
+Each race category has its own count.
+
+Why It Is 2D
+Two dimensions are involved: Race, Income Count
+Hence it becomes a planar/2D visualization.
+
+Insight
+The White racial group has the highest income count compared to other races.
+
+Viva Questions
+Q1. Why is this called 2D visualization?
+Because two attributes are compared on two axes.
+
+Q2. What does the axis represent?
+One axis represents race and the other represents income count.
+
+c. 3D (Volumetric) Data Visualization
+
+Title: 3D - Occupation wise income of male & female
+
+What is 3D Visualization?
+3D visualization uses multiple dimensions simultaneously.
+True 3D graphs are limited in Tableau, so grouped multi-dimensional charts are treated as 3D analytical views.
+
+Visualization Meaning
+The graph compares:
+Occupation, Gender, Income count
+at the same time.
+Color distinguishes: Male, Female
+The marital-status filter provides additional interaction.
+
+Why It Is Considered 3D
+Three dimensions are analyzed:Occupation, Gender, Income Count
+
+Insight
+Male income counts dominate across most occupations, especially:
+Craft-repair, Exec-managerial
+
+Viva Questions
+Q1. Why is this considered 3D?
+Because three dimensions are visualized together.
+
+Q2. What is the use of filters?
+Filters allow selective analysis of data.
+
+
+d. Multidimensional Data Visualization
+
+Title: Multidimensional - Income Distribution by Workclass, Gender, and Race
+
+What is Multidimensional Visualization?
+Multidimensional visualization analyzes several variables simultaneously.
+Here the dimensions are:
+Workclass
+Gender
+Race
+Income Count
+Visualization Meaning
+
+The graph helps identify:
+which workclass contributes most income
+gender-wise income patterns
+racial income distribution
+This provides deeper analytical insights.
+
+Why It Is Multidimensional
+More than three variables are analyzed together.
+
+Insight
+Private workclass employees contribute the highest income counts, particularly in the White race category.
+
+Viva Questions
+Q1. What is multidimensional visualization?
+Visualization involving multiple variables together.
+
+Q2. Why is it useful?
+It reveals complex relationships between attributes.
+
+
+e. Tree / Hierarchical Visualization
+
+Title: Tree-Map - Income Generated Based on Occupation
+
+What is a Treemap?
+A Treemap is a hierarchical visualization using rectangles.
+Rectangle size represents:
+data magnitude/value
+
+Visualization Meaning
+Each occupation is represented by a rectangle.
+Larger rectangles indicate:  higher income counts
+Smaller rectangles indicate:  lower income counts
+
+Hierarchical Structure
+The data is grouped hierarchically:
+Occupation → Income Count
+
+Insight
+Prof-specialty occupations generate the largest share of income.
+
+Viva Questions
+Q1. What is hierarchical visualization?
+Visualization showing parent-child relationships.
+
+Q2. What does rectangle size represent?
+Income count.
+
+
+f. Network Data Visualization
+
+Title: Network-Data
+
+What is Network Visualization?
+Network visualization shows relationships between connected entities using:
+nodes
+edges/lines
+
+
+Important Terms
+Term	                Meaning
+Node 	        Main entity/object
+Edge	                Connection between nodes
+Relationship	Association between entities
+
+Visualization Meaning
+Circles represent nodes.
+Lines represent relationships/connections.
+Different colors represent different nodes.
+
+Dual axis combines: Line graph, Circle graph
+into one network visualization.
+
+Why Use Dual Axis?
+Dual axis overlays: connection lines, node circles
+in the same graph.
+
+Relationship Meaning
+The graph shows how occupations or categories are interconnected.
+Central nodes indicate:
+          stronger or more frequent relationships.
+          
+Insight
+Craft-repair acts as a central connection node between occupations.
+
+Viva Questions
+Q1. What is a node?
+A node represents an entity in a network.
+
+Q2. What is an edge?
+An edge is the connection between nodes.
+
+Q3. Why is network visualization useful?
+It helps analyze relationships and connectivity patterns.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# VIVA
+
+1. What is Tableau?
+
+Tableau is a business intelligence and data visualization tool used to analyze and present data graphically.
+
+2. What is data visualization?
+
+Data visualization is the graphical representation of data using charts, graphs, maps, and dashboards.
+
+3. What is the Adult Dataset?
+
+The Adult Dataset is a demographic dataset containing information like:
+
+age
+gender
+race
+occupation
+workclass
+income
+
+It is commonly used for data analysis and machine learning.
+
+4. What is a Dimension in Tableau?
+
+Dimensions are categorical fields used to describe data.
+
+Examples:
+
+Gender
+Race
+Occupation
+Workclass
+
+5. What is a Measure in Tableau?
+
+Measures are numeric values used for calculations.
+
+Examples:
+
+Income Count
+Salary
+Age
+
+6. Difference between Dimension and Measure?
+Dimension	Measure
+Qualitative data	Quantitative data
+Creates headers	Creates axes
+Usually blue	Usually green
+
+7. What is COUNT in Tableau?
+
+COUNT calculates the total number of records.
+
+Example:
+
+Count of males
+Count of occupations
+
+8. What is a filter in Tableau?
+
+A filter limits the displayed data based on selected conditions.
+
+Example:
+
+Gender filter
+Marital-status filter
+
+9. What is 1D visualization?
+
+1D visualization analyzes only one variable.
+
+Example:
+
+Count of Gender
+
+10. What is 2D visualization?
+
+2D visualization compares two attributes using X-axis and Y-axis.
+
+Example:
+
+Race vs Income Count
+
+11. What is 3D visualization in Tableau?
+
+3D visualization represents multiple dimensions together in a grouped analytical view.
+
+12. Why is grouped analysis considered 3D?
+
+Because more than two dimensions are analyzed simultaneously.
+
+13. What is multidimensional visualization?
+
+Visualization involving multiple variables together.
+
+Example:
+
+Workclass
+Gender
+Race
+Income
+
+14. What is a Treemap?
+
+A Treemap is a hierarchical visualization using rectangles of different sizes.
+
+15. What does rectangle size represent in a Treemap?
+
+Rectangle size represents magnitude/value such as income count.
+
+16. What is network visualization?
+
+Network visualization shows relationships between connected entities using nodes and edges.
+
+17. What is a node in network visualization?
+
+A node represents an entity/object in the network.
+
+18. What is an edge in network visualization?
+
+An edge is the connection between two nodes.
+
+19. What is Dual Axis in Tableau?
+
+Dual axis combines two charts into a single visualization.
+
+20. What is the purpose of color in Tableau?
+
+Color helps differentiate categories and highlight patterns or intensity of data.
+
